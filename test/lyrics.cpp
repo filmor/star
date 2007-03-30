@@ -1,15 +1,15 @@
-#include "../src/lyrics.hpp"
+#include "lyrics_file.hpp"
 
 #include <iostream>
 
-int main ()
+int main (int argc, char** argv)
 {
-    star::lyrics::text v;
-    v.push_back (boost::make_tuple (2000, 0, "Aah"));
-    v.push_back (boost::make_tuple (1000, 0, " "));
-    v.push_back (boost::make_tuple (1000, 0, "Bee"));
+    if (argc < 2)
+        throw 1;
+
+    star::lyrics_file f (argv[1]);
     
-    star::lyrics l (v);
-    l.start (std::cout);
+    star::lyrics t = f.get_lyrics ();
+    t.start (std::cout);
 }
 

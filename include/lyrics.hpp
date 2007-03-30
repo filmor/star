@@ -16,6 +16,7 @@ namespace star
         typedef std::vector<syllable> text;
 
         lyrics (text const& t) : _lyrics (t) {}
+        lyrics (lyrics const& other) : _lyrics (other._lyrics) {}
 
         void start (std::ostream& os) const;
 

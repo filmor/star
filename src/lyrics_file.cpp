@@ -46,6 +46,11 @@ namespace star
             };
         };
 
+        struct string_closure : public ::sp::closure<string_closure, std::string>
+        {
+            member1 val;
+        };
+
         class lyrics_grammar : public grammar<lyrics_grammar>
         {
         public:
@@ -57,13 +62,16 @@ namespace star
                 rule<ScannerT> r;
                 definition (lyrics_grammar const& self)
                 {
-                    rule<ScannerT> line = (int_p >> real_p >> *alpha_p)
-                            /*[push_back (var (self._text),
-                                construct_<lyrics::syllable> (arg1, arg2,
-                                    construct_<std::string> (arg3)
-                                    )
+                    rule<ScannerT, string_closure::context_t> string
+                        = ((alpha_p) >> *(alpha_p))
+                            [string.val = construct_<std::string> (arg1, arg2)];
+
+                    rule<ScannerT> line = (int_p >> real_p >> !string)
+                            [push_back (var (self._text),
+                                construct_<lyrics::syllable> (200, 2.5, string.val)
                                 )
-                            ]*/;
+                            ];
+
                     r = *line;
                 }
 
@@ -78,15 +86,20 @@ namespace star
     lyrics_file::lyrics_file (fs::path const& path)
         : _path (path)
     {
-        sp::file_iterator<char> desc ((_path / "description").string ());
+        std::cout << path << std::endl;
+        // sp::file_iterator<char> desc ((_path / "description").string ());
     }
 
     lyrics lyrics_file::get_lyrics () const
     {
-        sp::file_iterator<char> f ((_path / "lyrics").string ());
+        sp::file_iterator<char> f ((_path/* / "lyrics"*/).string ());
+        if (!f)
+            throw 1;
         lyrics::text res;
-       /* sp::parse_info info = */sp::parse (f, f.make_end (), lyrics_grammar (res));
-        return res;
+        /* sp::parse_info info = */sp::parse (f, f.make_end (), lyrics_grammar (res));
+        std::cout << "blubb" << std::endl;
+        
+        return lyrics (res);
     }
 
 }    

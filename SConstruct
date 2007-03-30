@@ -7,11 +7,14 @@ name = "star"
 sources = glob.glob('src/*.cpp')
 tests = glob.glob('test/*.cpp')
 prefix = "/Users/bs/Gentoo/usr"
-fmod_prefix = "/Developer/FMOD Programmers API/api"
-libdir = [ join(prefix, "lib"), join(fmod_prefix, "lib") ]
-include = [ "include", join(prefix, "include"), join(fmod_prefix, "inc") ]
-libs = "boost_filesystem-mt-s fmodex".split()
-cxxflags = "-O3 -fomit-frame-pointer -march=prescott -g3"
+libdir = [ join(prefix, "lib") ]
+include = [ "include", join(prefix, "include") ]
+libs = "boost_thread boost_filesystem fmodex".split()
+cxxflags = "-O3 -fomit-frame-pointer -march=prescott "
+debugflags = "-march=prescott -g3"
+
+if ARGUMENTS.get('debug', 0):
+    cxxflags = debugflags
 
 env = Environment(CXXFLAGS=cxxflags, CPPPATH=include, LIBPATH=libdir, LIBS=libs)
 

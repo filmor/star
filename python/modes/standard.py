@@ -1,35 +1,31 @@
 import Display
 
-song = SongSelector().select()
+song = Song("sample_song") # SongSelector().select()
 
 STD_POINTS = 14
 STD_SPECIAL_POINTS = 100
 
-
 multiplicator = 1
 
-start = 0
+start = -1
 
+Display = compose ({ ((-1.0, -0.8, 0.0), (1.0, 0.8, 0.0)) : NotesPlane
+                   , ((-1.0, 0.8, 0.0),  (1.0, 1.0, 0.0)) : LyricsPlane
+                   })
 
-def whole_note(note):
-    note.blink()
-    multiplicator += 1
-    points += multiplicator * STD_SPECIAL_POINTS
-
-def on_hit_note(note, special):
-    note.emphasize()
-    if start == 0:
-        start = note.pos()
-        points += STD_POINTS * multiplicator
+def callback(note, sung_note, syllable):
+# Ignoriert die Oktave
+    if abs (note.value - sung_note.value) <= EPS:
+        syllable.emphasize (note.pos)
+        points += multiplicator * STD_POINTS
+        if note.pos < start:
+            start = note.pos
+        if start == 0 and note.pos == syllable.end:
+            syllable.blink ()
+            multiplicator += 0.1
+            start = -1
     else:
-        if note.end() and start == 0:
-            whole_note(note)
+        syllable.failure (note.pos, note.value - sung_note.value)
+        multiplicator = 1
 
-def on_fail_note(note, failure):
-    multiplicator = 1
-    start = 0
-
-song.hit += on_hit_note
-song.fail += on_fail_note
-
-song.start()
+song.start(note_callback = callback)

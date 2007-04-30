@@ -7,7 +7,7 @@ namespace star
 {
 namespace detail
 {
-    void fmod_base::error_check (std::string const& expr, FMOD_RESULT result)
+    void fmod_base::error_check (std::string const& expr, FMOD_RESULT result) const
     {
         if (result != FMOD_OK)
         {

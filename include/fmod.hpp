@@ -1,6 +1,8 @@
 #ifndef STAR_FMOD_HPP
 #define STAR_FMOD_HPP
 
+#include "audio_stream.hpp"
+
 #include <cstddef>
 #include <string>
 #include <fmod/fmod.hpp>
@@ -13,7 +15,7 @@ namespace star
         {
         protected:
             FMOD::System& get_system ();
-            void error_check (std::string const&, FMOD_RESULT);
+            void error_check (std::string const&, FMOD_RESULT) const;
 
         private:
             static FMOD::System* _system;
@@ -34,9 +36,22 @@ namespace star
         FMOD::Channel* _channel;
     };
 
-    class fmod_audio : private detail::fmod_base
+    class fmod_stream_impl : public audio_stream_impl<fmod_stream_impl>
+                           , private detail::fmod_base
     {
     public:
+        fmod_stream_impl (std::string const& path);
+        virtual ~fmod_stream_impl () {}
+
+        virtual void play ();
+        virtual void stop ();
+        virtual duration_t get_pos () const;
+
+        const char* mime_type () { return "x-application/ogg"; }
+
+    private:
+        FMOD::Sound* _sound;
+        FMOD::Channel* _channel;
     };
 
 }

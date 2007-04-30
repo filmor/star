@@ -1,4 +1,4 @@
-#include "lyrics_file.hpp"
+#include "song_info.hpp"
 
 #include <boost/spirit.hpp>
 #include <boost/spirit/phoenix.hpp>
@@ -83,14 +83,19 @@ namespace star
 
     }
 
-    lyrics_file::lyrics_file (fs::path const& path)
+    song_info::song_info (fs::path const& path)
         : _path (path)
     {
         std::cout << path << std::endl;
         // sp::file_iterator<char> desc ((_path / "description").string ());
     }
 
-    lyrics lyrics_file::get_lyrics () const
+    song_info::song_info (std::string const& p)
+        : _path (p + ".star")
+    {
+    }
+
+    lyrics song_info::get_lyrics () const
     {
         sp::file_iterator<char> f ((_path/* / "lyrics"*/).string ());
         if (!f)

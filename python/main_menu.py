@@ -1,9 +1,12 @@
 import sys
 
+import Menu
+
 Menu(
-        {
-          "Play" : file ("multi_player.menu.py")
-        , "Settings" : file ("settings.menu.py")
-        , "Quit" : lambda : sys.exit (0)
-        }
+        [
+          "play"
+        , "settings"
+        , ("Quit", lambda : sys.exit (0))
+        ]
     ).show ()
+

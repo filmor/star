@@ -12,13 +12,14 @@ namespace star
     class lyrics
     {
     public:
+        // (Länge, Tonhöhe, Text)
         typedef boost::tuple<short, double, std::string> syllable;
         typedef std::vector<syllable> text;
 
         lyrics (text const& t) : _lyrics (t) {}
         lyrics (lyrics const& other) : _lyrics (other._lyrics) {}
 
-        void start (std::ostream& os) const;
+        std::vector<short, std::string> lines () const;
 
     private:
         text _lyrics;

@@ -16,7 +16,7 @@ namespace star
         }
     } 
 
-    void lyrics::start (std::ostream& os) const
+/*    void lyrics::start (std::ostream& os) const
     {
         std::ostream::sentry guard (os);
 
@@ -28,12 +28,12 @@ namespace star
             boost::xtime xt;
             boost::xtime_get (&xt, boost::TIME_UTC);
             os << s.get<2> () << std::flush;
-/*            if (s.get<2> () != "")
-                tg.create_thread (cb (s.get<0> (), s.get<1> ())); */
+            if (s.get<2> () != "")
+                tg.create_thread (cb (s.get<0> (), s.get<1> ()));
             tg.join_all ();
             add_milliseconds (xt, s.get<0> ());
             boost::thread::sleep (xt);
         }
-    }
+    }*/
 }
 

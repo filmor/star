@@ -19,10 +19,10 @@ namespace star
         struct note
         {
             float value;
-            unsigned octave : 4; // Werte von 1 - 10
+            unsigned octave; // eigentlich : 4,  Werte von 1 - 10
         };
         
-        note operator () (boost::posix_time::time_duration const& d)
+        note operator () (unsigned d)//boost::posix_time::time_duration const& d)
         {
             const int a = 9;
             const float eps = 0.01;
@@ -30,7 +30,7 @@ namespace star
             const static float log2_440 = std::log (440.0f) / log2;
 
             typename DetectorPolicy::frequency_type f
-                = DetectorPolicy::get_frequency (0, d.total_milliseconds ());
+                = DetectorPolicy::get_frequency (0, /*d.total_milliseconds ()*/ d);
 
             note result;
             float k = std::log (f) / log2 - log2_440;

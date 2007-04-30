@@ -20,14 +20,16 @@ namespace star
         exinfo.format = FMOD_SOUND_FORMAT_PCM16;
         exinfo.length = 44100 * 0.2; 
 
+        FMOD::System& system = get_system ();
+
         // system_lock_type lock (system_mutex);
 
-        EC(get_system ().createSound (0, FMOD_2D | FMOD_SOFTWARE | FMOD_LOOP_NORMAL
+        EC(system.createSound (0, FMOD_2D | FMOD_SOFTWARE | FMOD_LOOP_NORMAL
                                      | FMOD_OPENUSER, &exinfo, &_sound));
 
-        EC(get_system ().recordStart (_sound, true));
+        EC(system.recordStart (_sound, true));
 
-        EC(get_system ().playSound (FMOD_CHANNEL_REUSE, _sound, false, &_channel));
+        EC(system.playSound (FMOD_CHANNEL_REUSE, _sound, false, &_channel));
 
         EC(_channel->setVolume (0));
     }

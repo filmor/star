@@ -1,7 +1,8 @@
 #ifndef STAR_SONG_HPP
 #define STAR_SONG_HPP
 
-#include "lyrics_file.hpp"
+#include <boost/function.hpp>
+#include "song_info.hpp"
 
 namespace star
 {
@@ -9,13 +10,14 @@ namespace star
     class song
     {
     public:
-        song (lyrics_file const&);
+        typedef boost::function0<void> callback_type;
 
-        void start () const;
+        song (song_info const&);
+
+        void start (callback_type const&) const;
 
     private:
-        lyrics_stream _lyrics_stream;
-        audio_stream _audio_stream;
+        // ...
     };
 
 }

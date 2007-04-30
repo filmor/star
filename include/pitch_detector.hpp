@@ -3,6 +3,7 @@
 
 #include <cmath>
 #include <boost/date_time/posix_time/posix_time_types.hpp>
+#include "basic_types.hpp"
 
 namespace star
 {
@@ -11,18 +12,7 @@ namespace star
     class pitch_detector : public DetectorPolicy
     {
     public:
-        struct notes
-        {
-            enum { C = 0, Cis = 1, D = 2, Dis = 3, E = 4, F = 5
-                , Fis = 6, G = 7, Gis = 8, A = 9, Ais = 10, B = 11 };
-        };
-        struct note
-        {
-            float value;
-            unsigned octave; // eigentlich : 4,  Werte von 1 - 10
-        };
-        
-        note operator () (unsigned d)//boost::posix_time::time_duration const& d)
+        note operator () (duration_t d)
         {
             const int a = 9;
             const float eps = 0.01;
@@ -30,7 +20,7 @@ namespace star
             const static float log2_440 = std::log (440.0f) / log2;
 
             typename DetectorPolicy::frequency_type f
-                = DetectorPolicy::get_frequency (0, /*d.total_milliseconds ()*/ d);
+                = DetectorPolicy::get_frequency (0, d);
 
             note result;
             float k = std::log (f) / log2 - log2_440;

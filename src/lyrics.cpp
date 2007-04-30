@@ -1,39 +1,49 @@
-#include "lyrics.hpp"
+#include "song_info.hpp"
 
 #include <boost/thread/thread.hpp>
 #include <boost/thread/xtime.hpp>
-#include <boost/iterator/zip_iterator.hpp>
+#include <boost/algorithm/string/predicate.hpp>
+
+#include <iostream>
 
 namespace star
 {
 
-    namespace
+    // Aye, so stimmt das nicht. tuple_iterator scheint hier nicht angebracht, nur für
+    // notes ist das  semantisch korrekt.
+    song_info::lines song_info::get_lines () const
     {
-        inline void add_milliseconds (boost::xtime& xt, short milliseconds)
+        return boost::make_iterator_range (lines_iterator (_data.begin ()),
+                                           lines_iterator (_data.end ())
+                                          );
+    }
+
+/*        lines_vector res (1);
+
+        for (data_type::const_iterator i = _data.begin (); i != _data.end (); ++i)
         {
-            xt.sec += milliseconds / 1000;
-            xt.nsec += (milliseconds % 1000) * 1000;
+            res[0].get<0> () += i->get<0> ();
+            std::string s = i->get<2> ();
+            if (s != "~")
+            {
+                if (boost::ends_with (s, "-"))
+                {
+                    s.resize (s.length () - 1);
+                    res[0].get<1> () += s;
+                }
+                else
+                    (res[0].get<1> () += s) += ' ';
+            }
         }
+        return res;
+    }*/
+
+    song_info::notes song_info::get_notes () const
+    {
+        return boost::make_iterator_range (notes_iterator (_data.begin ()),
+                                           notes_iterator (_data.end ())
+                                          );
     } 
 
-/*    void lyrics::start (std::ostream& os) const
-    {
-        std::ostream::sentry guard (os);
-
-        boost::thread_group tg;
-
-        for (text::const_iterator i = _lyrics.begin (); i != _lyrics.end (); ++i)
-        {
-            syllable const& s = *i;
-            boost::xtime xt;
-            boost::xtime_get (&xt, boost::TIME_UTC);
-            os << s.get<2> () << std::flush;
-            if (s.get<2> () != "")
-                tg.create_thread (cb (s.get<0> (), s.get<1> ()));
-            tg.join_all ();
-            add_milliseconds (xt, s.get<0> ());
-            boost::thread::sleep (xt);
-        }
-    }*/
 }
 

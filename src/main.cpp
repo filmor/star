@@ -20,14 +20,15 @@ int main (int argc, char** argv)
     PySys_SetArgv (argc, argv);
 
     bp::object main_module = bp::import ("__main__");
-    bp::object global = main_module.attr("__dict__");
+    bp::object global = main_module.attr ("__dict__");
 
+    // Create the pseudo built-in module _star
     bp::exec (  "import __builtin__\n"
-                "_star = type(__builtin__)('_star')\n"
+                "__builtin__._star = type(__builtin__)('_star')\n"
                 "del __builtin__"
              , global, global);
 
-    bp::object star = global["_star"];
+    bp::object star = bp::import ("__builtin__").attr ("_star");
     {
         bp::scope s (star);
         // python::module_audio ();
@@ -35,7 +36,7 @@ int main (int argc, char** argv)
     }
 
     bf::path main_py ("python/main.py");
-
+    /// Hand the control to the main python script
     bp::exec_file (bp::str(main_py.native_file_string ()), global, global);
 
     Py_Finalize ();

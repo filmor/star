@@ -8,7 +8,8 @@
 
 #include <boost/filesystem/path.hpp>
 #include <boost/tuple/tuple.hpp>
-#include <boost/range/sub_range.hpp>
+#include <boost/range/iterator_range.hpp>
+#include <boost/iterator/transform_iterator.hpp>
 #include <boost/python/dict.hpp>
 #include <string>
 #include <vector>
@@ -27,15 +28,18 @@ namespace star
         typedef std::vector<syllable_type>                      data_type;
 
         typedef data_type::const_iterator                       syllable_iterator;
-        typedef tuple_iterator<data_type::const_iterator, 0, 1> notes_iterator;
+        typedef boost::transform_iterator<filter_tuple<data_type::value_type, 0, 1>,
+                                          data_type::const_iterator 
+                                         >
+            notes_iterator;
 
         typedef boost::iterator_range<notes_iterator>           notes;
 
         song_info (boost::filesystem::path const&);
 
-        audio_stream get_audio_stream (unsigned char s = 0) const;
+        audio_stream get_audio_stream (unsigned char track = 0) const;
 
-        notes get_notes (unsigned char s = 0) const;
+        notes get_notes (unsigned char track = 0) const;
 
     private:
         boost::filesystem::path _path;

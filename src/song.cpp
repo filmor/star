@@ -5,7 +5,6 @@
 #include <algorithm>
 
 #include <boost/thread/thread.hpp>
-#include <boost/thread/xtime.hpp>
 #include <boost/ref.hpp>
 #include <boost/bind.hpp>
 
@@ -35,8 +34,7 @@ namespace star
 
         boost::thread_group tg;
         
-        boost::xtime xs;
-        boost::xtime_get (&xs, boost::TIME_UTC);
+        time t;
 
         as.play ();
 
@@ -54,7 +52,7 @@ namespace star
             {
                 note_t const& note = i->get<1> ();
 
-                duration_t const start = to_milliseconds (xs);
+                duration_t const start = t;
                 duration_t const end = start + duration;
 
                 syllable_t syl = { start, start, end };
@@ -62,8 +60,8 @@ namespace star
                 /// \todo Handle unfitting note lengthes properly
                 for (; syl.pos < syl.end; syl.pos += resolution)
                 {
-                    add_milliseconds (xs, resolution);
-                    boost::thread::sleep (xs);
+                    t += resolution;
+                    t.wait ();
                     _notes_callback (note, detect (resolution), syl);
                 }
             }

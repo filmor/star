@@ -19,7 +19,7 @@ namespace star
                         (creator->second) (path.string ())
                     );
         else
-            // \todo proper xception class 
+            // \todo proper exception class 
             throw type;
     }
 

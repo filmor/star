@@ -12,7 +12,7 @@ namespace star
     class pitch_detector : public DetectorPolicy
     {
     public:
-        note operator () (duration_t d)
+        note_t operator () (duration_t d)
         {
             const int a = 9;
             const float eps = 0.01;
@@ -22,10 +22,10 @@ namespace star
             typename DetectorPolicy::frequency_type f
                 = DetectorPolicy::get_frequency (0, d);
 
-            note result;
+            note_t result;
             float k = std::log (f) / log2 - log2_440;
             result.value = std::fmod (k, 12) + 9.0f;
-            result.octave = k + a/12.0f + eps;
+            result.octave = static_cast<unsigned> (k + a/12.0f + eps);
             return result;
         }
     };

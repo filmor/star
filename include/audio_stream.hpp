@@ -11,9 +11,6 @@
 #include <utility>
 
 
-#include <iostream>
-
-
 namespace star
 {
 
@@ -31,6 +28,7 @@ namespace star
 
         void play ();
         void stop ();
+        void wait ();
 
 //        void synchronize (boost::date_time::duration const& /* should be */,
 //                          boost::xtime const& /* is */);
@@ -40,6 +38,7 @@ namespace star
         {
             virtual void play () = 0;
             virtual void stop () = 0;
+            virtual void wait () = 0;
             virtual duration_t get_pos () const = 0;
             virtual ~stream_impl () {}
         };
@@ -68,10 +67,7 @@ namespace star
                        registry_type::mapped_type const& f 
                           = &register_<T>::creator)
             {
-                /// Ne, das ist böse. Guck nach, wie der CodeProject-Typ das gemacht
-                /// hat!
-                std::cout << "Cons: " << n << std::endl;
-                _registered.insert (std::make_pair (n, f));
+                _get_registered ()->insert (std::make_pair (n, f));
             }
         private:
             static stream_impl* creator (std::string const& s) { return new T (s); }
@@ -81,7 +77,11 @@ namespace star
         friend struct register_;
 
     private:
-        static registry_type _registered;
+        static registry_type* _get_registered ()
+        {
+            static registry_type map;
+            return &map;
+        }
 
         boost::shared_ptr<stream_impl> _impl;
     };

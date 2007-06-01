@@ -8,41 +8,40 @@
 
 #include <boost/filesystem/path.hpp>
 #include <boost/tuple/tuple.hpp>
-#include <boost/range/iterator_range.hpp>
+#include <boost/range/sub_range.hpp>
+#include <boost/python/dict.hpp>
 #include <string>
 #include <vector>
 
 namespace star
 {
     
+    /**
+     * \todo Rename to song.
+     */
     class song_info
     {
     public:
-        // \todo Iteratoren statt lines_vector/notes_vector
-        typedef std::vector<boost::tuple<duration_t, double, std::string> >
-            data_type;
+        /// time, note, text
+        typedef boost::tuple<duration_t, note_t, std::string>   syllable_type;
+        typedef std::vector<syllable_type>                      data_type;
 
-
-        // \todo lines_iterator implementieren
-        typedef tuple_iterator<data_type::const_iterator, 0, 2> lines_iterator;
+        typedef data_type::const_iterator                       syllable_iterator;
         typedef tuple_iterator<data_type::const_iterator, 0, 1> notes_iterator;
-        typedef boost::iterator_range<lines_iterator> lines;
-        typedef boost::iterator_range<notes_iterator> notes;
+
+        typedef boost::iterator_range<notes_iterator>           notes;
 
         song_info (boost::filesystem::path const&);
-        // Sucht im Standardpfad nach möglichen Dateien
-        //song_info (std::string const&);
 
-        audio_stream get_audio_stream () const;
+        audio_stream get_audio_stream (unsigned char s = 0) const;
 
-        /// \todo size_t Parameter für "Spur" (bei mehrstimmigen Liedern)
-        notes get_notes () const;
-
-        lines get_lines () const;
+        notes get_notes (unsigned char s = 0) const;
 
     private:
         boost::filesystem::path _path;
-        data_type _data;
+        /// \todo Make the dict either usable to python or un-intrusive (prefer last)
+        boost::python::dict _desc;
+        data_type _lyrics_data;
     };
 
 }

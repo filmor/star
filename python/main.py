@@ -11,5 +11,3 @@ except:
     import sys, traceback
 
     traceback.print_exc(file=sys.stdout)
-finally:
-    os.chdir(oldpath)

@@ -9,24 +9,18 @@ namespace fs = boost::filesystem;
 
 namespace star
 {
-    audio_stream::registry_type audio_stream::_registered;
-
-    audio_stream::audio_stream (std::string const& mime_type, fs::path const& path)
+    audio_stream::audio_stream (std::string const& type, fs::path const& path)
     {
-        registry_type::const_iterator creator = _registered.find (mime_type);
+        registry_type const& registered = *_get_registered ();
+        registry_type::const_iterator creator = registered.find (type);
 
-        std::cout << mime_type << std::endl;
-
-        for (registry_type::const_iterator i = _registered.begin (); i != _registered.end (); ++i)
-            std::cout << i->first << std::endl;
-
-        if (creator != _registered.end ())
+        if (creator != registered.end ())
             _impl = boost::shared_ptr<stream_impl> (
                         (creator->second) (path.string ())
                     );
         else
-            // \todo Ausnahme-Klasse
-            throw mime_type;
+            // \todo proper xception class 
+            throw type;
     }
 
     audio_stream::~audio_stream ()
@@ -41,6 +35,11 @@ namespace star
     void audio_stream::stop ()
     {
         _impl->stop ();
+    }
+
+    void audio_stream::wait ()
+    {
+        _impl->wait ();
     }
 
 }

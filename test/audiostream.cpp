@@ -10,8 +10,16 @@ int main (int argc, char** argv)
         throw 1;
 
     std::cout << argv[1] << std::endl;
-    star::audio_stream p ("x-application/ogg", argv[1]);
-    p.play ();
-    
+    try
+    {
+        star::audio_stream p ("ogg/vorbis", argv[1]);
+        p.play ();
+        p.wait ();
+        usleep (1000000);
+    }
+    catch (std::string const& s)
+    {
+        std::cerr << s << std::endl;
+    }    
 }
 

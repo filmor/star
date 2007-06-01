@@ -6,17 +6,13 @@ from os.path import join
 name = "star"
 sources = glob.glob('src/*.cpp')
 tests = glob.glob('test/*.cpp')
-prefix = "/Users/bs/Gentoo/usr"
-libdir = [ join(prefix, "lib") ]
-include = [ "include", join(prefix, "include"), join(prefix, "include/python2.5") ]
-libs = "boost_thread boost_filesystem boost_python fmodex".split()
-frameworks = "Python".split()
-cxxflags = "-O3 -Wall -g3 -fomit-frame-pointer -march=prescott -D_GLIBCXX_CONCEPT_CHECKS"
+prefix = "/usr"
+libdir = [ join(prefix, "lib"), join(prefix, "lib/python2.4/config") ]
+include = [ "include", join(prefix, "include"), join(prefix, "include/python2.4") ]
+libs = "boost_thread boost_filesystem boost_python fmodex64 python2.4".split()
+cxxflags = "-O3 -Wall -g3 -fomit-frame-pointer -march=k8 -D_GLIBCXX_CONCEPT_CHECKS"
 
 ldflags = []
-for i in frameworks:
-    ldflags += ["-framework"]
-    ldflags += [i]
 
 env = Environment(CXXFLAGS=cxxflags, CPPPATH=include, LIBPATH=libdir, LIBS=libs, LINKFLAGS = ldflags)
 

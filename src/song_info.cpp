@@ -1,44 +1,24 @@
 #include "song_info.hpp"
 
-#include <boost/spirit.hpp>
 #include <boost/filesystem/path.hpp>
 #include <boost/filesystem/fstream.hpp>
-#include <boost/function.hpp>
-
-#include <boost/tuple/tuple_io.hpp>
+#include <boost/python/exec.hpp>
+#include <boost/python/extract.hpp>
 
 #include <sstream>
 
-namespace fs = boost::filesystem;
-namespace sp = boost::spirit;
+namespace bf = boost::filesystem;
+namespace bp = boost::python;
 
 namespace star
 {
-    /// \todo Regel für Zeile statt für die ganze Datei
-
-    namespace
-    {
-        using namespace sp;
-
-        struct description_grammar : public grammar<description_grammar>
-        {
-            template <typename ScannerT>
-            struct definition
-            {
-                rule<ScannerT> r;
-                definition (description_grammar const& self)
-                {}
-
-                rule<ScannerT> const& start () const { return r; }
-            };
-        };
-
-    }
-
-    song_info::song_info (fs::path const& path)
+    
+    /// \todo Either implement converters and smf as standard or multiple inputs
+    ///       (prefer first)
+    song_info::song_info (bf::path const& path)
         : _path (path)
     {
-        fs::ifstream lyrics (_path / "lyrics");
+        bf::ifstream lyrics (_path / "lyrics");
 
         while (lyrics)
         {
@@ -47,17 +27,34 @@ namespace star
             data_type::value_type tuple;
 
             std::istringstream si (line);
-            si >> tuple.get<0> () >> tuple.get<1> () >> tuple.get<2> ();
 
-            _data.push_back (tuple);
+            std::string note = "";
+    
+            /// \todo Spirit-rule for reading a lyrics-files line instead
+            si >> tuple.get<0> () >> note >> tuple.get<2> ();
+
+            std::istringstream si2 (note);
+            char c;
+            si2 >> (tuple.get<1> ().value) >> c >> (tuple.get<1> ().octave);
+
+            _lyrics_data.push_back (tuple);
         }
 
-        // sp::file_iterator<char> desc ((_path / "description").string ());
+        bp::exec_file (bp::str ((_path / "description").native_file_string ()),
+                       _desc, _desc);
     }
 
-    audio_stream song_info::get_audio_stream () const
+    audio_stream song_info::get_audio_stream (unsigned char s) const
     {
-        return audio_stream ("x-application/ogg", _path / "audio");
+        return audio_stream (bp::extract<std::string> (_desc["audio_type"]),
+                             _path / "audio");
     }
 
-}    
+    song_info::notes song_info::get_notes (unsigned char s) const
+    {
+        return boost::make_iterator_range (notes_iterator (_lyrics_data.begin ()),
+                                           notes_iterator (_lyrics_data.end ())
+                                          );
+    }
+
+}

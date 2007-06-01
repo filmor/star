@@ -18,7 +18,7 @@ namespace star
         exinfo.numchannels = 2;
         exinfo.defaultfrequency = 44100;
         exinfo.format = FMOD_SOUND_FORMAT_PCM16;
-        exinfo.length = 44100 * 0.2; 
+        exinfo.length = static_cast<unsigned int> (44100 * 0.2);
 
         FMOD::System& system = get_system ();
 

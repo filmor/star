@@ -10,8 +10,12 @@ namespace function {
 // We need a wrapper functor for Python objects to store in a boost::functionN
 // object, mostly because we need to extract the return type.
 
+#ifndef NDEBUG
 #define FUNCTION_OBJECT_FUNCTOR_DEBUG( n ) \
     ::std::cout << "object_functor" << n << ": "
+#else
+#define FUNCTION_OBJECT_FUNCTOR_DEBUG( n )
+#endif
 
 template < typename Function ,
            unsigned int Arity = Function::arity >

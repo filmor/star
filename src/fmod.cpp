@@ -1,6 +1,6 @@
 #include "fmod.hpp"
 
-#include <fmod/fmod_errors.h>
+#include <fmodex/fmod_errors.h>
 #include <iostream>
 
 namespace star

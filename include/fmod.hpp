@@ -5,7 +5,12 @@
 
 #include <cstddef>
 #include <string>
-#include <fmod/fmod.hpp>
+#include <fmodex/fmod.hpp>
+
+#include <boost/preprocessor/stringize.hpp>
+
+#define STAR_FMOD_EC(expr) \
+    error_check (BOOST_PP_STRINGIZE(expr), (expr))
 
 namespace star
 {
@@ -45,9 +50,8 @@ namespace star
 
         virtual void play ();
         virtual void stop ();
+        virtual void wait ();
         virtual duration_t get_pos () const;
-
-        const char* mime_type () { return "x-application/ogg"; }
 
     private:
         FMOD::Sound* _sound;

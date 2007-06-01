@@ -2,14 +2,16 @@
 #define STAR_BASIC_TYPES_HPP
 
 #include <cstddef>
+#include <boost/integer.hpp>
+#include <boost/thread/xtime.hpp>
 
 namespace star
 {
 
-    struct note
+    struct note_t
     {
         float value;
-        unsigned char octave;
+        boost::uint_t<4>::fast octave;
     };
 
     struct notes
@@ -18,14 +20,27 @@ namespace star
              , Fis = 6, G = 7, Gis = 8, A = 9, Ais = 10, B = 11 };
     };
 
-    struct coords
+    struct coord_t
     {
         float x;
         float y;
         float z;
     };
 
-    typedef std::size_t duration_t;
+    /// Holds a time duration im milliseconds.
+    /// 24 Bit are enough for about 4 hours.
+    typedef boost::uint_t<24>::fast duration_t;
+
+    inline void add_milliseconds (boost::xtime& xt, duration_t milliseconds)
+    {
+        xt.sec += milliseconds / 1000;
+        xt.nsec += (milliseconds % 1000) * 1000000;
+    }
+
+    inline duration_t to_milliseconds (boost::xtime const& xt)
+    {
+        return xt.sec * 1000 + xt.nsec / 1000000;
+    }
 
 }
 

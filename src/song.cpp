@@ -5,9 +5,9 @@
 #include <algorithm>
 
 #include <boost/thread/thread.hpp>
-#include <boost/thread/xtime.hpp>
 #include <boost/ref.hpp>
 #include <boost/bind.hpp>
+#include <boost/foreach.hpp>
 
 #include "fmod.hpp"
 #define STAR_DETECTOR_POLICY fmod_detector
@@ -17,12 +17,6 @@ namespace star
     namespace
     {
         static const duration_t resolution = 200;
-
-        template <typename FunctionT>
-        inline void call (FunctionT f)
-        {
-            f ();
-        }
     }
             
     void song::start (song_info const& _info) const
@@ -35,18 +29,15 @@ namespace star
 
         boost::thread_group tg;
         
-        boost::xtime xs;
-        boost::xtime_get (&xs, boost::TIME_UTC);
+        time t;
 
         as.play ();
 
         for (song_info::notes::const_iterator i = n.begin (); i != n.end (); ++i)
         {
             if (!_syllable_callbacks.empty ())
-                std::for_each (_syllable_callbacks.begin (),
-                               _syllable_callbacks.end (),
-                               call<syllable_callback_type>
-                        );
+                BOOST_FOREACH(syllable_callback_type const& cb, _syllable_callbacks)
+                    cb ();
 
             duration_t const& duration = i->get<0> ();
 
@@ -54,7 +45,7 @@ namespace star
             {
                 note_t const& note = i->get<1> ();
 
-                duration_t const start = to_milliseconds (xs);
+                duration_t const start = t;
                 duration_t const end = start + duration;
 
                 syllable_t syl = { start, start, end };
@@ -62,8 +53,8 @@ namespace star
                 /// \todo Handle unfitting note lengthes properly
                 for (; syl.pos < syl.end; syl.pos += resolution)
                 {
-                    add_milliseconds (xs, resolution);
-                    boost::thread::sleep (xs);
+                    t += resolution;
+                    t.wait ();
                     _notes_callback (note, detect (resolution), syl);
                 }
             }

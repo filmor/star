@@ -9,8 +9,12 @@
 
 #include <boost/preprocessor/stringize.hpp>
 
+#ifndef NDEBUG
 #define STAR_FMOD_EC(expr) \
     error_check (BOOST_PP_STRINGIZE(expr), (expr))
+#else
+#define STAR_FMOD_EC(expr) expr
+#endif
 
 namespace star
 {

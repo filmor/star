@@ -44,10 +44,9 @@ namespace star
         unsigned int length = 0;
         STAR_FMOD_EC(_sound->getLength(&length, FMOD_TIMEUNIT_MS));
         length -= get_pos (); // should be safe
-        boost::xtime xt;
-        xtime_get (&xt, boost::TIME_UTC);
-        add_milliseconds (xt, length);
-        boost::thread::sleep (xt); // argh
+        time t;
+        t += length;
+        t.wait (); // argh
     }
 }
 

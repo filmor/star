@@ -4,6 +4,7 @@
 #include <iostream>
 
 #include "fmod.hpp"
+#include "graphics_output.hpp"
 
 #define STAR_DETECTOR_POLICY fmod_detector
 
@@ -16,8 +17,10 @@ using namespace star;
 
 int main (int argc, char** argv)
 {
+    graphics_output& out = graphics_output::instance ();
     try
     {
+        PyEval_InitThreads ();
         Py_Initialize ();
         PySys_SetArgv (argc, argv);
 
@@ -29,9 +32,11 @@ int main (int argc, char** argv)
 
         {
             bp::scope s (star);
-            // python::module_audio ();
             python::module_base ();
         }
+
+        // out.open_window (640, 480, true);
+        out.draw ();
 
         bf::path main_py ("python/main.py");
 
@@ -42,6 +47,8 @@ int main (int argc, char** argv)
     {
         PyErr_Print ();
     }
+
+    out.close_window ();
 
     Py_Finalize ();
 }

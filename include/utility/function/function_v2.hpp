@@ -1,21 +1,40 @@
+#ifndef FUNCTION_V2_HPP
+#define FUNCTION_V2_HPP
+
 #include <boost/python.hpp>
 #include <boost/function.hpp>
 #include <iostream>
 #include <map>
 
-using namespace ::boost::python ;
-
 namespace function {
+
+    using namespace ::boost::python;
 
 // We need a wrapper functor for Python objects to store in a boost::functionN
 // object, mostly because we need to extract the return type.
 
-#ifndef NDEBUG
+#if 0 // NDEBUG
 #define FUNCTION_OBJECT_FUNCTOR_DEBUG( n ) \
     ::std::cout << "object_functor" << n << ": "
 #else
 #define FUNCTION_OBJECT_FUNCTOR_DEBUG( n )
 #endif
+
+namespace detail
+{
+#ifndef FUNCTION_NO_THREADS
+    class global_interpreter_lock : boost::noncopyable
+    {
+    public:
+        global_interpreter_lock () : _state (PyGILState_Ensure ()) {}
+        ~global_interpreter_lock () { PyGILState_Release (_state); }
+    private:
+        PyGILState_STATE _state;
+    };
+#else
+    struct global_interpreter_lock : boost::noncopyable {};
+#endif
+}
 
 template < typename Function ,
            unsigned int Arity = Function::arity >
@@ -34,6 +53,9 @@ struct object_functor< Function , 0 >
     result_type operator () () const
     {
         FUNCTION_OBJECT_FUNCTOR_DEBUG( 0 ) ;
+
+        detail::global_interpreter_lock lock;
+
         return call< result_type >( obj.get() ) ;
     }
 
@@ -47,7 +69,10 @@ struct object_functor< Function , 1 >
     result_type operator () ( typename Function::arg1_type a1 ) const
     {
         FUNCTION_OBJECT_FUNCTOR_DEBUG( 1 ) ;
-        return call< result_type >( obj.get() , a1 ) ;
+
+        detail::global_interpreter_lock lock;
+
+        return call< result_type >( obj.get(), a1 ) ;
     }
 
 } ;
@@ -61,7 +86,10 @@ struct object_functor< Function , 2 >
                               typename Function::arg2_type a2 ) const
     {
         FUNCTION_OBJECT_FUNCTOR_DEBUG( 2 ) ;
-        return call< result_type >( obj.get() , a1 , a2 ) ;
+
+        detail::global_interpreter_lock lock;
+
+        return call< result_type >( obj.get(), a1, a2 ) ;
     }
 
 } ;
@@ -76,7 +104,10 @@ struct object_functor< Function , 3 >
                               typename Function::arg3_type a3 ) const
     {
         FUNCTION_OBJECT_FUNCTOR_DEBUG( 3 ) ;
-        return call< result_type >( obj.get() , a1 , a2 , a3 ) ;
+
+        detail::global_interpreter_lock lock;
+
+        return call< result_type >( obj.get(), a1, a2, a3 ) ;
     }
 
 } ;
@@ -156,3 +187,5 @@ void export_functor( const char* name )
 }
 
 } // end namespace function
+
+#endif

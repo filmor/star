@@ -9,7 +9,7 @@ tests = glob.glob('test/*.cpp')
 prefix = "/usr"
 libdir = [ join(prefix, "lib"), join(prefix, "lib/python2.4/config") ]
 include = [ "include", join(prefix, "include"), join(prefix, "include/python2.4") ]
-libs = "boost_thread boost_filesystem boost_python fmodex64 python2.4".split()
+libs = "glfw boost_thread boost_filesystem boost_python fmodex64 python2.4".split()
 cxxflags = "-O3 -Wall -g3 -fomit-frame-pointer -march=k8 -D_GLIBCXX_CONCEPT_CHECKS"
 
 ldflags = []

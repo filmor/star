@@ -7,6 +7,7 @@
 #include <boost/thread/thread.hpp>
 #include <boost/ref.hpp>
 #include <boost/bind.hpp>
+#include <boost/foreach.hpp>
 
 #include "fmod.hpp"
 #define STAR_DETECTOR_POLICY fmod_detector
@@ -16,12 +17,6 @@ namespace star
     namespace
     {
         static const duration_t resolution = 200;
-
-        template <typename FunctionT>
-        inline void call (FunctionT f)
-        {
-            f ();
-        }
     }
             
     void song::start (song_info const& _info) const
@@ -41,10 +36,8 @@ namespace star
         for (song_info::notes::const_iterator i = n.begin (); i != n.end (); ++i)
         {
             if (!_syllable_callbacks.empty ())
-                std::for_each (_syllable_callbacks.begin (),
-                               _syllable_callbacks.end (),
-                               call<syllable_callback_type>
-                        );
+                BOOST_FOREACH(syllable_callback_type const& cb, _syllable_callbacks)
+                    cb ();
 
             duration_t const& duration = i->get<0> ();
 

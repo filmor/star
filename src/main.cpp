@@ -1,13 +1,11 @@
 #include <boost/python.hpp>
 #include <boost/filesystem.hpp>
 
-#include <iostream>
-
 #include "fmod.hpp"
 
 #define STAR_DETECTOR_POLICY fmod_detector
 
-#include "python-base.hpp"
+#include "python.hpp"
 
 namespace bp = boost::python;
 namespace bf = boost::filesystem;
@@ -30,7 +28,7 @@ int main (int argc, char** argv)
         {
             bp::scope s (star);
             // python::module_audio ();
-            python::module_base ();
+            python::module_star ();
         }
 
         bf::path main_py ("python/main.py");

@@ -7,6 +7,13 @@
 
 #include <sstream>
 
+#include <boost/thread/thread.hpp>
+#include <boost/ref.hpp>
+#include <boost/bind.hpp>
+
+#include "fmod.hpp"
+#define STAR_DETECTOR_POLICY fmod_detector
+
 namespace bf = boost::filesystem;
 namespace bp = boost::python;
 

@@ -1,10 +1,10 @@
-def SongInfo(name):
+def Song(name):
     import os
     from os.path import join
-    return _star.song_info(join("..", "examples", name + ".star"))
+    return _star.song(join("..", "examples", name + ".star"))
 
 def SongSelector():
     pass
 
-def Song():
-    return _star.song()
+def Player():
+    return _star.player()

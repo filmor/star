@@ -1,7 +1,6 @@
-#ifndef STAR_PYTHON_BASE_HPP
-#define STAR_PYTHON_BASE_HPP
+#include "python.hpp"
 
-#include "song.hpp"
+#include "player.hpp"
 #include "basic_types.hpp"
 #include "graphics_output.hpp"
 
@@ -13,6 +12,7 @@ namespace star
 {
 namespace python
 {
+
     namespace
     {
         using namespace boost::python;
@@ -37,13 +37,13 @@ namespace python
         }
     }
 
-    void module_base ()
+    void module_star ()
     {
         using namespace boost::python;
 
-        ::function::export_function<song::notes_callback_type>
+        ::function::export_function<player::notes_callback_type>
             ("_notes_callback_type");
-        ::function::export_function<song::syllable_callback_type>
+        ::function::export_function<player::syllable_callback_type>
             ("_syllable_callback_type");
         /*::function::export_function<graphics_output::drawer_type>
            ("_drawer_type");*/
@@ -53,7 +53,7 @@ namespace python
             .def_readonly ("octave", &note_t::octave)
             ;
 
-        typedef song::syllable_t syllable_t;
+        typedef player::syllable_t syllable_t;
 
         class_<syllable_t> ("syllable_t")
             .def_readonly ("start", &syllable_t::start)
@@ -61,12 +61,12 @@ namespace python
             .def_readonly ("end", &syllable_t::end)
             ;
 
-        class_<song_info> ("song_info", init<std::string> ())
+        class_<song> ("song", init<std::string> ())
             ;
 
-        class_<song> ("song")
-            .def ("start", &song::start)
-            .add_property ("notes_callback", &null, &song::set_notes_callback)
+        class_<player> ("player")
+            .def ("start", &player::start)
+            .add_property ("notes_callback", &null, &player::set_notes_callback)
             ;
 
         def ("set_drawer", &set_drawer);
@@ -74,11 +74,9 @@ namespace python
         def ("clear_drawer", &clear_drawer);
         def ("get_dimensions", &get_dimensions);
 
-        ::function::register_pyobject_to_function<song::notes_callback_type> ();
-        ::function::register_pyobject_to_function<song::syllable_callback_type> ();
+        ::function::register_pyobject_to_function<player::notes_callback_type> ();
+        ::function::register_pyobject_to_function<player::syllable_callback_type> ();
         // ::function::register_pyobject_to_function<graphics_output::drawer_type> ();
     }
 }
 }
-
-#endif

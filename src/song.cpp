@@ -1,67 +1,67 @@
 #include "song.hpp"
 
-#include "pitch_detector.hpp"
+#include <boost/filesystem/path.hpp>
+#include <boost/filesystem/fstream.hpp>
+#include <boost/python/exec.hpp>
+#include <boost/python/extract.hpp>
 
-#include <algorithm>
+#include <sstream>
 
 #include <boost/thread/thread.hpp>
 #include <boost/ref.hpp>
 #include <boost/bind.hpp>
-#include <boost/foreach.hpp>
 
 #include "fmod.hpp"
 #define STAR_DETECTOR_POLICY fmod_detector
 
+namespace bf = boost::filesystem;
+namespace bp = boost::python;
+
 namespace star
 {
-    namespace
+    
+    /// \todo Either implement converters and smf as standard or multiple inputs
+    ///       (prefer first)
+    song::song (bf::path const& path)
+        : _path (path)
     {
-        static const duration_t resolution = 200;
-    }
-            
-    void song::start (song_info const& _info) const
-    {
-        typedef pitch_detector<fmod_detector> detector;
-        detector detect;
+        bf::ifstream lyrics (_path / "lyrics");
 
-        song_info::notes n = _info.get_notes ();
-        audio_stream as = _info.get_audio_stream ();
-
-        boost::thread_group tg;
-        
-        time t;
-
-        as.play ();
-
-        for (song_info::notes::const_iterator i = n.begin (); i != n.end (); ++i)
+        while (lyrics)
         {
-            if (!_syllable_callbacks.empty ())
-                BOOST_FOREACH(syllable_callback_type const& cb, _syllable_callbacks)
-                    cb ();
+            std::string line;
+            std::getline (lyrics, line);
+            data_type::value_type tuple;
 
-            duration_t const& duration = i->get<0> ();
+            std::istringstream si (line);
 
-            if (_notes_callback)
-            {
-                note_t const& note = i->get<1> ();
+            std::string note = "";
+    
+            /// \todo Spirit-rule for reading a lyrics-files line instead
+            si >> tuple.get<0> () >> note >> tuple.get<2> ();
 
-                duration_t const start = t;
-                duration_t const end = start + duration;
+            std::istringstream si2 (note);
+            char c;
+            si2 >> (tuple.get<1> ().value) >> c >> (tuple.get<1> ().octave);
 
-                syllable_t syl = { start, start, end };
-                
-                /// \todo Handle unfitting note lengthes properly
-                for (; syl.pos < syl.end; syl.pos += resolution)
-                {
-                    t += resolution;
-                    t.wait ();
-                    _notes_callback (note, detect (resolution), syl);
-                }
-            }
+            _lyrics_data.push_back (tuple);
         }
 
-        as.wait ();
-        tg.join_all ();
+        bp::exec_file (bp::str ((_path / "description").native_file_string ()),
+                       _desc, _desc);
+    }
+
+    audio_stream song::get_audio_stream (unsigned char s) const
+    {
+        return audio_stream (bp::extract<std::string> (_desc["audio_type"]),
+                             _path / "audio");
+    }
+
+    song::notes song::get_notes (unsigned char s) const
+    {
+        return boost::make_iterator_range (notes_iterator (_lyrics_data.begin ()),
+                                           notes_iterator (_lyrics_data.end ())
+                                          );
     }
 
 }

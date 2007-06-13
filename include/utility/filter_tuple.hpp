@@ -1,7 +1,6 @@
-#ifndef STAR_UTILITY_TUPLE_ITERATOR_HPP
-#define STAR_UTILITY_TUPLE_ITERATOR_HPP
+#ifndef STAR_UTILITY_FILTER_TUPLE_HPP
+#define STAR_UTILITY_FILTER_TUPLE_HPP
 
-#include <boost/iterator/iterator_adaptor.hpp>
 #include <boost/tuple/tuple.hpp>
 
 namespace star

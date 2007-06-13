@@ -1,14 +1,12 @@
 #include <boost/python.hpp>
 #include <boost/filesystem.hpp>
 
-#include <iostream>
-
 #include "fmod.hpp"
 #include "graphics_output.hpp"
 
 #define STAR_DETECTOR_POLICY fmod_detector
 
-#include "python-base.hpp"
+#include "python.hpp"
 
 namespace bp = boost::python;
 namespace bf = boost::filesystem;
@@ -26,13 +24,14 @@ int main (int argc, char** argv)
 
         bp::object global = bp::import ("__main__").attr ("__dict__");
 
-        // Create the pseudo built-in module _star
+        /// Create the pseudo built-in module _star
+        /// \todo __builtins__ is forbidden. Use __builtin__ instead.
         bp::object star (bp::handle<> (PyModule_New ("_star")));
         global["__builtins__"].attr ("__dict__")["_star"] = star;
 
         {
             bp::scope s (star);
-            python::module_base ();
+            python::module_star ();
         }
 
         // out.open_window (640, 480, true);

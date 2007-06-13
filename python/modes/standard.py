@@ -3,14 +3,15 @@ STD_SPECIAL_POINTS = 100
 
 EPS = 0.05
 
-class Player:
-    def __init__ (self, song, notes_plane):
+class Game:
+    def __init__ (self, player, song, notes_plane):
         self.__multiplicator = 1
         self.__start = -1
         self.__points = 0
         self.__output = notes_plane
+        self.__player = player
         self.__song = song
-        song.notes_callback = self.__callback
+        player.notes_callback = self.__callback
 
     def __callback(note, sung_note, syllable):
         # Ignoriert die Oktave
@@ -29,18 +30,18 @@ class Player:
             self.__multiplicator = 1
 
     def start():
-        self.__song.start()
+        self.__player.start(self.__song)
 
 
 if __name__ == '__main__':
-    info = SongInfo('sample_song')
+    song = Song('sample_song')
 
-    song = Song()
+    player = Player()
 
     Display = compose ({ ((-1.0, -0.8, 0.0), (1.0, 0.8, 0.0)) : NotesPlane(song)
                        , ((-1.0, 0.8, 0.0),  (1.0, 1.0, 0.0)) : LyricsPlane(song)
                        })
 
-    p = Player(song, Display[0])
+    p = Game(player, song, Display[0])
 
-    p.start(info)
+    p.start()

@@ -38,7 +38,8 @@ int main (int argc, char** argv)
         bp::object global = bp::import ("__main__").attr ("__dict__");
         bp::object builtin = bp::import ("__builtin__").attr ("__dict__");
 
-        // Create the pseudo built-in module _star
+        /// Create the pseudo built-in module _star
+        /// \todo __builtins__ is forbidden. Use __builtin__ instead.
         bp::object star (bp::handle<> (PyModule_New ("_star")));
         builtin["_star"] = star;
         {

@@ -1,3 +1,3 @@
-from Drawer import *
-from Graphics import *
-from Tree import *
+from Scene import *
+from Actor import *
+from GD import *

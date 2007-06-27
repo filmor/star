@@ -23,6 +23,7 @@ namespace star
         /// time, note, text
         typedef boost::tuple<duration_t, note_t, std::string>   syllable_type;
         typedef std::vector<syllable_type>                      data_type;
+        typedef boost::python::dict                             desc_type;
 
         typedef data_type::const_iterator                       syllable_iterator;
         typedef boost::transform_iterator<filter_tuple<data_type::value_type, 0, 1>,
@@ -30,6 +31,7 @@ namespace star
                                          >
             notes_iterator;
 
+        typedef boost::iterator_range<syllable_iterator>        lyrics;
         typedef boost::iterator_range<notes_iterator>           notes;
 
         song (boost::filesystem::path const&);
@@ -38,10 +40,14 @@ namespace star
 
         notes get_notes (unsigned char track = 0) const;
 
+        lyrics get_lyrics (unsigned char track = 0) const;
+
+        desc_type get_description () const { return _desc; }
+
     private:
         boost::filesystem::path _path;
         /// \todo Make the dict either usable to python or un-intrusive (prefer last)
-        boost::python::dict _desc;
+        desc_type _desc;
         data_type _lyrics_data;
     };
 

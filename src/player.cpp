@@ -21,6 +21,8 @@ namespace star
             
     void player::start (song const& _info) const
     {
+        _playing = true;
+
         typedef pitch_detector<fmod_detector> detector;
         detector detect;
 
@@ -62,6 +64,8 @@ namespace star
 
         as.wait ();
         tg.join_all ();
+
+        _playing = false;
     }
 
 }

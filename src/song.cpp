@@ -64,4 +64,9 @@ namespace star
                                           );
     }
 
+    song::lyrics song::get_lyrics (unsigned char track) const
+    {
+        return boost::make_iterator_range (_lyrics_data.begin (), _lyrics_data.end ());
+    }
+
 }

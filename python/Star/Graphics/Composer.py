@@ -1,0 +1,3 @@
+
+class Composer(DrawNode):
+    pass

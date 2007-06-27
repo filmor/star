@@ -8,10 +8,11 @@
 namespace star
 {
 
+    /// \todo Reformat & define correct copy behaviour
     class player
     {
     public:
-        /// \todo Rename!
+        /// \todo Rename! (candidates: lyrics_item, )
         struct syllable_t
         {
             duration_t start;
@@ -19,7 +20,10 @@ namespace star
             duration_t end;
         };
 
-        typedef boost::function<void (note_t, note_t, syllable_t)> notes_callback_type;
+        typedef boost::function<void (note_t, note_t, syllable_t)>
+            notes_callback_type;
+
+        player () : _playing (false) {}
 
         /// \attention This is not in any way connected to song::syllable!
         typedef boost::function<void ()> syllable_callback_type;
@@ -35,7 +39,11 @@ namespace star
 
         void start (song const&) const;
 
+        bool is_playing () const { return _playing; }
+
     private:
+        mutable bool _playing;
+
         /// The one and only notes callback function.
         notes_callback_type _notes_callback;
         /// A vector of syllable callbacks.

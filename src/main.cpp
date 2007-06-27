@@ -13,9 +13,22 @@ namespace bf = boost::filesystem;
 
 using namespace star;
 
+void python_thread (bp::str path, bp::object global)
+{
+    try
+    {
+        bp::exec_file (path, global, global);
+    }
+    catch (boost::python::error_already_set const&)
+    {
+        PyErr_Print ();
+    }
+
+    graphics_output::instance ().close_window ();
+}
+
 int main (int argc, char** argv)
 {
-    graphics_output& out = graphics_output::instance ();
     try
     {
         PyEval_InitThreads ();
@@ -23,30 +36,33 @@ int main (int argc, char** argv)
         PySys_SetArgv (argc, argv);
 
         bp::object global = bp::import ("__main__").attr ("__dict__");
+        bp::object builtin = bp::import ("__builtin__").attr ("__dict__");
 
         // Create the pseudo built-in module _star
         bp::object star (bp::handle<> (PyModule_New ("_star")));
-        global["__builtins__"].attr ("__dict__")["_star"] = star;
-
+        builtin["_star"] = star;
         {
             bp::scope s (star);
             python::module_star ();
         }
 
-        // out.open_window (640, 480, true);
-        out.draw ();
-
         bf::path main_py ("python/main.py");
 
-    /// Hand the control to the main python script
-        bp::exec_file (bp::str(main_py.native_file_string ()), global, global);
+        boost::thread py_thread (
+                boost::bind (&python_thread,
+                             bp::str (main_py.native_file_string ()),
+                             global)
+                );
+
+        graphics_output::instance ().draw ();
+
+        /// \todo Handle closing of the graphics window
+        py_thread.join ();
     }
     catch (boost::python::error_already_set const&)
     {
         PyErr_Print ();
     }
-
-    out.close_window ();
 
     Py_Finalize ();
 }

@@ -19,7 +19,7 @@ namespace star
             throw "blah";
         }
 
-        _width = x; _height = y;
+        _dimensions = std::make_pair (x, y);
 
         glfwSwapInterval (1);
 
@@ -28,16 +28,16 @@ namespace star
 
         glClearColor (0, 0, 0, 0);
 
-        GLfloat afLightDiffuse[4] = {0.76, 0.75, 0.65, 1.0};
+        // GLfloat afLightDiffuse[4] = {0.76, 0.75, 0.65, 1.0};
 
         glEnable (GL_TEXTURE_2D);
         glEnable (GL_BLEND);
         glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-        glLightModeli (GL_LIGHT_MODEL_TWO_SIDE, 1);
+        // glLightModeli (GL_LIGHT_MODEL_TWO_SIDE, 1);
 
         glEnable (GL_LIGHTING);
         glEnable (GL_LIGHT0);
-        glLightfv (GL_LIGHT0, GL_DIFFUSE, afLightDiffuse);
+        // glLightfv (GL_LIGHT0, GL_DIFFUSE, afLightDiffuse);
 
         glClearDepth(1);
         glEnable(GL_DEPTH_TEST);
@@ -45,39 +45,35 @@ namespace star
 
         glMatrixMode(GL_PROJECTION);
     	glLoadIdentity();
-	    gluPerspective (45.0f, (GLfloat) _width / (GLfloat) _height, 0.1f, 100.0f);
+	    gluPerspective (45.0f, static_cast<GLfloat> (_dimensions.first) 
+                              / _dimensions.second, 0.1f, 100.0f);
 
 	    glMatrixMode(GL_MODELVIEW);
 	    glLoadIdentity();
-
-    }
-
-    void graphics_output::draw ()
-    {
-        if (!_draw_thread)
-            _draw_thread = new boost::thread (
-                                boost::bind (&graphics_output::do_draw_loop, this)
-                                );
     }
 
     void graphics_output::close_window ()
     {
         _drawing = false;
 
-        {
-            write_lock l1 (_drawer_mutex), l2 (_inits_mutex);
-        }
+        { write_lock l1 (_drawer_mutex); write_lock l2 (_inits_mutex); }
+    }
 
-        // join seems to be undefined here
-        // _draw_thread->join ();
-        delete _draw_thread;
-        _draw_thread = 0;
+    void graphics_output::draw ()
+    {
+        _drawing = true;
+
+        open_window (640, 480);
+
+        while (_drawing/* &= 
+                !glfwGetKey (GLFW_KEY_ESC) && glfwGetWindowParam (GLFW_OPENED)*/)
+            do_draw ();
 
         glfwCloseWindow ();
     }
 
     graphics_output::graphics_output ()
-        : _draw_thread (0)//, _mutex (boost::writer_priority)
+        : _dimensions (0, 0)//, _mutex (boost::writer_priority)
           //read_write_mutex is broken
     {
         glfwInit ();
@@ -88,21 +84,6 @@ namespace star
         close_window ();
 
         glfwTerminate ();
-    }
-
-    void graphics_output::do_draw_loop ()
-    {
-        _drawing = true;
-
-        open_window (640, 480);
-
-        while (_drawing/* &= 
-                !glfwGetKey (GLFW_KEY_ESC) && glfwGetWindowParam (GLFW_OPENED)*/)
-            do_draw ();
-
-        /// This doesn't work out very well. The window has to be closed manually
-        /// and before(!) the Python VM
-        // close_window ();
     }
 
     void graphics_output::do_draw ()

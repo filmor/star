@@ -5,6 +5,7 @@
 
 #include <cstddef>
 #include <string>
+#include <stdexcept>
 #include <fmodex/fmod.hpp>
 
 #include <boost/preprocessor/stringize.hpp>
@@ -29,7 +30,14 @@ namespace star
         private:
             static FMOD::System* _system;
         };
+
     }
+
+    class fmod_exception : public std::runtime_error
+    {
+    public:
+        explicit fmod_exception (FMOD_RESULT) throw ();
+    };
 
     class fmod_detector : private detail::fmod_base
     {

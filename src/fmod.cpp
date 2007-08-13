@@ -13,7 +13,7 @@ namespace detail
         {
             std::cerr << '"' << expr << "\":\n\t" << FMOD_ErrorString(result)
                       << std::endl;
-            throw result;
+            throw fmod_exception (result);
         }
     }
 
@@ -40,5 +40,10 @@ namespace detail
     }
 
 }
+
+    fmod_exception::fmod_exception (FMOD_RESULT result) throw ()
+        : std::runtime_error (FMOD_ErrorString (result))
+    {}
+
 }
 

@@ -15,9 +15,9 @@ namespace star
         note_t operator () (duration_t d)
         {
             const int a = 9;
-            const float eps = 0.01;
-            const static float log2 = std::log (2.0f);
-            const static float log2_440 = std::log (440.0f) / log2;
+            const double eps = 0.01;
+            const static double log2 = std::log (2.0);
+            const static double log2_440 = std::log (440.0) / log2;
 
             typename DetectorPolicy::frequency_type f
                 = DetectorPolicy::get_frequency (0, d);

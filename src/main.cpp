@@ -65,5 +65,6 @@ int main (int argc, char** argv)
         PyErr_Print ();
     }
 
-    Py_Finalize ();
+//  boost-devel ml said this won't work. I'll believe them for now.
+//    Py_Finalize ();
 }

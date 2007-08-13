@@ -5,7 +5,7 @@ from Texture import TextureDrawer
 try:
     import numpy
     zeros = lambda (tuple) : numpy.zeros(tuple, dtype=int)
-except:
+except ImportError:
     import Numeric
     zeros = lambda (tuple) : Numeric.zeros(tuple, typecode='i')
 

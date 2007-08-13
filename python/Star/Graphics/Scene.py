@@ -1,3 +1,4 @@
+from GL import glGetError
 
 class SceneNode(object):
     def __init__(self, *children):
@@ -18,10 +19,12 @@ class SceneNode(object):
     def draw(self):
         for i in self._children:
             i.draw()
+        error = glGetError()
+        if error != 0:
+            print error
 
     def add_children(self, node):
         self._children.append(node)
-
 
 class Scene(SceneNode):
     def __init__(self, *children):

@@ -21,6 +21,7 @@ class TextureDrawer(SceneNode):
             self._texture_mode = GL_TEXTURE_2D
         else:
             self._texture_mode = GL_TEXTURE_2D # GL_TEXTURE_RECTANGLE
+        super(TextureDrawer, self).__init__()
 
     def initialize(self):
         self._texture_handle = glGenTextures(1)
@@ -51,6 +52,6 @@ class TextureDrawer(SceneNode):
         if self._blend:
             glDisable(GL_BLEND)
 
-    def __del__(self):
-        _star.enqueue_init(lambda : glDeleteTextures(self._texture_handle))
+    def uninitialize(self):
+        glDeleteTextures(self._texture_handle)
 

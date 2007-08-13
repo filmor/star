@@ -90,27 +90,20 @@ namespace star
     {
         glClear (GL_COLOR_BUFFER_BIT);
 
-        try
         {
-            {
-                read_lock l (_inits_mutex);
+            read_lock l (_inits_mutex);
 
-                while (!_inits.empty ())
-                {
-                    (_inits.front ()) ();
-                    _inits.pop ();
-                }
-            }
-
-            if (_drawer)
+            while (!_inits.empty ())
             {
-                read_lock l (_drawer_mutex);
-                _drawer ();
+                boost::python::handle_exception (_inits.front ());
+                _inits.pop ();
             }
         }
-        catch (boost::python::error_already_set const&)
+
+        if (_drawer)
         {
-            boost::python::handle_exception();
+            read_lock l (_drawer_mutex);
+            boost::python::handle_exception (_drawer);
         }
 
         glfwSwapBuffers ();

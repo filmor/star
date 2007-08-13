@@ -18,7 +18,8 @@ namespace star
     {
         static const duration_t resolution = 200;
     }
-            
+    
+    /// \todo Rewrite using midi_dispatcher
     void player::start (song const& _info) const
     {
         _playing = true;

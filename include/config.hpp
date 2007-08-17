@@ -15,6 +15,7 @@ namespace star
     {
     public:
         typedef boost::python::dict data_type;
+        typedef boost::python::dict module_type;
 
         static config& instance ()
         {
@@ -33,6 +34,11 @@ namespace star
         {
             _data[name] = value;
         }
+
+        template <typename FacilityT>
+        struct facility
+        {
+        };
 
     protected:
         void load_source (std::string const&);

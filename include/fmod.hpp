@@ -2,6 +2,7 @@
 #define STAR_FMOD_HPP
 
 #include "audio_stream.hpp"
+#include "config.hpp"
 
 #include <cstddef>
 #include <string>
@@ -31,6 +32,13 @@ namespace star
             static FMOD::System* _system;
         };
 
+        struct fmod_facility : public config::facility<fmod_facility>
+        {
+            config_element<config::choice, config::needs_restart> output;
+            config_list<
+                 config_element<config::choice>
+                > inputs;
+        };
     }
 
     class fmod_exception : public std::runtime_error

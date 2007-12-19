@@ -1,22 +1,20 @@
-#include "graphics_output.hpp"
+#include "game_window.hpp"
 
 #include <boost/bind.hpp>
-#include <boost/python.hpp>
 #include <iostream>
 #include <GL/glfw.h>
 
 namespace star
 {
 
-    void graphics_output::open_window (std::size_t x, std::size_t y,
-                                       bool windowed = true)
+    void game_window::open (std::size_t x, std::size_t y, bool windowed = true)
     {
-        // glfwOpenWindowHint (GLFW_WINDOW_NO_RESIZE);
+        glfwOpenWindowHint (GLFW_WINDOW_NO_RESIZE, GL_TRUE);
         if (!glfwOpenWindow (x, y, 8, 8, 8, 8, 24, 0,
                              windowed ? GLFW_WINDOW : GLFW_FULLSCREEN))
         {
             glfwTerminate ();
-            throw "blah";
+            throw graphics_exception ("Could not open window.");
         }
 
         _dimensions = std::make_pair (x, y);
@@ -52,65 +50,58 @@ namespace star
 	    glLoadIdentity();
     }
 
-    void graphics_output::close_window ()
+    void game_window::close ()
     {
         _drawing = false;
 
         { write_lock l1 (_drawer_mutex); write_lock l2 (_inits_mutex); }
     }
 
-    void graphics_output::draw ()
+    void game_window::draw ()
     {
         _drawing = true;
 
-        open_window (640, 480);
+        open (640, 480);
 
-        while (_drawing/* &= 
-                !glfwGetKey (GLFW_KEY_ESC) && glfwGetWindowParam (GLFW_OPENED)*/)
+        while (_drawing &= 
+                !glfwGetKey (GLFW_KEY_ESC) && glfwGetWindowParam (GLFW_OPENED))
             do_draw ();
 
         glfwCloseWindow ();
     }
 
-    graphics_output::graphics_output ()
+    game_window::game_window ()
         : _dimensions (0, 0)//, _mutex (boost::writer_priority)
           //read_write_mutex is broken
     {
         glfwInit ();
     }
 
-    graphics_output::~graphics_output ()
+    game_window::~game_window ()
     {
-        close_window ();
+        close ();
 
         glfwTerminate ();
     }
 
-    void graphics_output::do_draw ()
+    void game_window::do_draw ()
     {
         glClear (GL_COLOR_BUFFER_BIT);
 
-        try
         {
-            {
-                read_lock l (_inits_mutex);
+            read_lock l (_inits_mutex);
 
-                while (!_inits.empty ())
-                {
-                    (_inits.front ()) ();
-                    _inits.pop ();
-                }
-            }
-
-            if (_drawer)
+            while (!_inits.empty ())
             {
-                read_lock l (_drawer_mutex);
-                _drawer ();
+                (_inits.front ()) ();
+                _inits.pop ();
             }
         }
-        catch (boost::python::error_already_set const&)
+
+        if (_drawer)
         {
-            boost::python::handle_exception();
+            read_lock l (_drawer_mutex);
+            _drawer ();
         }
 
         glfwSwapBuffers ();

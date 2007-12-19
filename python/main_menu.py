@@ -1,11 +1,12 @@
 import sys
 
-import Menu
+from Star import Menu
 
 Menu(
+        "Main Menu",
         [
-          "play"
-        , "settings"
+          ("Play", PlayMenu)
+        , ("Settings", SettingsMenu)
         , ("Quit", lambda : sys.exit (0))
         ]
     ).show ()

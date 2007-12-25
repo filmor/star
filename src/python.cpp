@@ -17,10 +17,6 @@ namespace python
 
     /// \todo This file is pretty messy. Tidy (Split!) up!
 
-    /// \todo set_scene, reset_scene instead of game_window interface
-
-    /// \todo Get rid of low-level game_window functions.
-
     namespace
     {
         using namespace boost::python;

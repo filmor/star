@@ -8,29 +8,43 @@
 namespace star
 {
 
+    /// Scalar data type. As it is likely that OpenGL3 won't have support for double
+    /// this can be changed here easily.
     typedef double scalar;
 
+    /// Quaternion type, used for rotations.
     typedef boost::math::quaternion<scalar> quaternion;
 
+    /// Vector type (in the mathematical sense), used for translations.
     typedef boost::numeric::ublas::bounded_vector<scalar, 3> vector;
 
+    /// Zero vector type, default translation.
     struct zero_vector : public boost::numeric::ublas::zero_vector<scalar>
     {
         zero_vector () : boost::numeric::ublas::zero_vector<scalar> (3) {}
     };
 
+    /// Identity matrix type.
     struct identity_matrix : public boost::numeric::ublas::identity_matrix<scalar>
     {
         identity_matrix () : boost::numeric::ublas::identity_matrix<scalar> (4) {}
     };
 
+    /// Matrix type (4x4, column major), to be used with OpenGL.
     typedef boost::numeric::ublas::bounded_matrix<scalar, 4, 4,
                                                 boost::numeric::ublas::column_major
                                                 >
         matrix;
 
+    /// Matrix product function.
     using boost::numeric::ublas::prod;
 
+    /**
+     * Function to produce a translation matrix from a vector.
+     *
+     * \param v Translation vector.
+     * \return Translation matrix.
+     */
     template <typename Vector>
     matrix translation_from_vector (Vector const& v)
     {
@@ -41,6 +55,7 @@ namespace star
         return res;
     }
 
+    /// Returns a rotation matrix from a quaternion.
     inline matrix rotation_from_quaternion (quaternion q)
     {
         using namespace boost;
@@ -50,6 +65,7 @@ namespace star
         scalar const& y = q.R_component_3 ();
         scalar const& z = q.R_component_4 ();
 
+        /// \todo Should be zeroed out before.
         matrix res;
 
         res(0, 0) = 1 -  2. * (y*y + z*z);

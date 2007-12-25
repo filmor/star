@@ -15,12 +15,13 @@
 namespace star
 {
 
+    /// \todo Document!
     /// \todo Proper naming. (delayed init?)
     template <class T>
     class resource
     {
+        struct dont_initialize_t {};
     public:
-        struct dont_initialize {};
 
 #define STAR_RESOURCE_CONSTRUCTOR(Z, N, _)                                      \
         template <BOOST_PP_ENUM_PARAMS(N, typename A)>                          \
@@ -47,7 +48,7 @@ namespace star
                 (
                     boost::bind (&resource::deinitialize, this)
                 );
-            /// \todo Wait
+            /// \todo Conditional wait
         }
 
 #define STAR_RESOURCE_INIT(Z, N, _)                                          \

@@ -5,20 +5,37 @@
 namespace star
 {
 
-    texture::texture (data_type const& data, std::size_t width, std::size_t height)
+    namespace detail
     {
-        glGenTextures (1, &_handle);
-        glBindTexture (GL_TEXTURE_2D, _handle);
-        glTexImage2D (GL_TEXTURE_2D, 0, 3, width, height, 0, GL_RGBA,
-                      GL_UNSIGNED_INT_8_8_8_8, &data[0]);
+        texture::texture (data_type const& data,
+                          std::size_t width, std::size_t height)
+        {
+            glGenTextures (1, &_handle);
+            glBindTexture (GL_TEXTURE_2D, _handle);
+            glTexImage2D (GL_TEXTURE_2D, 0, 3, width, height, 0, GL_RGBA,
+                          GL_UNSIGNED_INT_8_8_8_8, &data[0]);
+        }
+
+        texture::~texture ()
+        {
+            glDeleteTextures (1, &_handle);
+        }
     }
 
-    texture::~texture ()
+    /**
+     * Load a texture.
+     */ 
+    void texture_drawer_policy::load_texture (detail::texture::data_type const& data,
+                                       std::size_t height, std::size_t width)
     {
-        glDeleteTextures (1, &_handle);
-    }
+        if (bool (_texture) || data.size () < width * height)
+            return;
+        _texture.init (data, height, width);
+        _width = width;
+        _height = height;
+    }    
 
-    void texture_drawer::do_draw ()
+    void texture_drawer_policy::draw ()
     {
         if (!_texture)
             return;

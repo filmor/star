@@ -1,5 +1,6 @@
 #include "scene.hpp"
 
+#include <GL/glfw.h>
 #include <boost/foreach.hpp>
 
 namespace star

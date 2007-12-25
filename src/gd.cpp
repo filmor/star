@@ -4,6 +4,8 @@ namespace star
 {
     namespace
     {
+        using namespace detail;
+
         texture::data_type convert_image_to_texture (gdImagePtr im)
         {
             texture::data_type res (im->sx * im->sy);

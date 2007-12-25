@@ -11,12 +11,12 @@
 namespace star
 {
 
-    struct string_drawer : texture_drawer 
+    struct string_drawer : texture_drawer_policy
     {
         string_drawer (std::string const&, double, std::string const&);
     };
 
-    struct png_drawer : texture_drawer
+    struct png_drawer : texture_drawer_policy
     {
         png_drawer (boost::filesystem::path const&);
     };

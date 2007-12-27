@@ -36,7 +36,7 @@ namespace python
                 handle_exception ();
             }
         }
-        
+ 
         void set_scene (scene_node_base const& s)
         {
             game_window::instance ().set_drawer (
@@ -46,6 +46,15 @@ namespace python
 
         void clear_scene ()
         { game_window::instance ().clear_drawer (); }
+
+        void set_key_callback (game_window::key_callback_type const& cb)
+        { game_window::instance ().set_key_callback (cb, game_window::KEY_MODE); }
+
+        void set_char_callback (game_window::key_callback_type const& cb)
+        { game_window::instance ().set_key_callback (cb, game_window::CHAR_MODE); }
+
+        void clear_key_callback ()
+        { game_window::instance ().clear_key_callback (); }
 
         void enqueue_init (game_window::initializer_type const& func)
         { game_window::instance ().enqueue_init (func); }
@@ -80,8 +89,8 @@ namespace python
             ("_notes_callback_type");
         ::function::export_function<player::syllable_callback_type>
             ("_syllable_callback_type");
-        // ::function::export_function<window::key_callback_type>
-        //    ("_key_callback_type");
+        ::function::export_function<game_window::key_callback_type>
+            ("_key_callback_type");
 
         class_<note_t> ("note_t")
             .def_readonly ("value", &note_t::value)
@@ -119,12 +128,15 @@ namespace python
 
         def ("set_scene", &set_scene);
         def ("clear_scene", &clear_scene);
+        def ("set_key_callback", &set_key_callback);
+        def ("set_char_callback", &set_char_callback);
+        def ("clear_key_callback", &clear_key_callback);
         def ("enqueue_init", &enqueue_init);
         def ("get_dimensions", &get_dimensions);
 
         ::function::register_pyobject_to_function<player::notes_callback_type> ();
         ::function::register_pyobject_to_function<player::syllable_callback_type> ();
-        // ::function::register_pyobject_to_function<game_window::drawer_type> ();
+        ::function::register_pyobject_to_function<game_window::key_callback_type> ();
     }
 }
 }

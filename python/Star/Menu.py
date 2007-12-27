@@ -10,7 +10,9 @@ class Menu:
 
         self._scene = MenuScene(name, [ i for i, j in self._entries ])
 
-    def _keyboard_callback(self, key):
+    def _keyboard_callback(self, key, state):
+        if state != STATE_PRESS:
+            return
         if key == KEY_UP:
             if self._marker == 0:
                 self._marker = len(self._entries)
@@ -40,6 +42,6 @@ class Menu:
     __call__ = show
 
     def unshow():
-        Keys.UnregisterKeyCallback()
+        Keys.ClearKeyCallback()
 
 

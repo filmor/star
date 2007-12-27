@@ -7,6 +7,13 @@
 namespace star
 {
 
+    /**
+     * Open the main window with a ready gl context.
+     *
+     * \param x Width of the window
+     * \param y Height of the window
+     * \param windowed Start in windowed mode
+     */    
     void game_window::open (std::size_t x, std::size_t y, bool windowed = true)
     {
         glfwOpenWindowHint (GLFW_WINDOW_NO_RESIZE, GL_TRUE);
@@ -105,6 +112,28 @@ namespace star
         }
 
         glfwSwapBuffers ();
+    }
+
+    void game_window::set_key_callback (key_callback_type cb,
+                                        key_callback_mode mode)
+    {
+        _key_callback = cb;
+        if (mode == KEY_MODE)
+            glfwSetKeyCallback (&detail::glfw_key_callback);
+        else if (mode == CHAR_MODE)
+            glfwSetCharCallback (&detail::glfw_key_callback);
+    }
+
+    void game_window::clear_key_callback ()
+    {
+        /// It might be necessary to call SetCharCallback(0) if this mode was used.
+        glfwSetKeyCallback (0);
+    }
+
+    namespace detail
+    {
+        void glfw_key_callback (int key, int state)
+        { game_window::instance ()._key_callback (key, state); }   
     }
 
 }

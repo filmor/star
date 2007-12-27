@@ -10,11 +10,7 @@ namespace detail
     void fmod_base::error_check (std::string const& expr, FMOD_RESULT result) const
     {
         if (result != FMOD_OK)
-        {
-            std::cerr << '"' << expr << "\":\n\t" << FMOD_ErrorString(result)
-                      << std::endl;
             throw fmod_exception (result);
-        }
     }
 
     FMOD::System* fmod_base::_system = 0;
@@ -23,17 +19,19 @@ namespace detail
     {
         if (_system == 0)
         {
-            FMOD_RESULT result = FMOD::System_Create (&_system);
-            error_check ("", result);
+            
+            STAR_FMOD_EC(FMOD::System_Create (&_system));
 
-//            error_check ("", _system->setOutput (FMOD_OUTPUTTYPE_SOUNDMANAGER));
+/*            STAR_FMOD_EC(_system->setOutput (
+                          config::instance ().get<fmod_facility::output> ()
+                        ));
+                        */
 
-            result = _system->setSoftwareFormat (44100, FMOD_SOUND_FORMAT_PCM16
-                                                , 2, 0, FMOD_DSP_RESAMPLER_LINEAR);
-            error_check ("", result);
+            STAR_FMOD_EC(_system->setSoftwareFormat (44100, FMOD_SOUND_FORMAT_PCM16
+                                                , 2, 0, FMOD_DSP_RESAMPLER_LINEAR)
+                    );
 
-            result = _system->init(32, FMOD_INIT_NORMAL, 0);
-            error_check ("", result);
+            STAR_FMOD_EC(_system->init(32, FMOD_INIT_NORMAL, 0));
         }
 
         return *_system;

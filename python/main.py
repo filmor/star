@@ -1,11 +1,27 @@
-import os
-oldpath = os.getcwd()
-os.chdir("python")
+import sys
+sys.path += ['python']
 
 try:
-    import sys, time, __main__, IPython
+    # import Star
 
-    IPython.Shell.IPShell(user_ns = __main__.__dict__).mainloop()
+    from IPython.Shell import IPShellEmbed
+
+    ipshell = IPShellEmbed()
+    ipshell()
+
+    from Star.Graphics import Scene, StarBackground, WaterGround
+
+# \todo Setup standard scene:
+#       - star background
+#       - water ground
+    base_scene = Scene()
+    base_scene.background = StarBackground()
+    base_scene.ground = WaterGround()
+    base_scene()
+
+    import main_menu
+
+    raw_input()
 
 except:
     import sys, traceback

@@ -1,6 +1,7 @@
 from GL import glGetError
 
-class SceneNode(object):
+# \todo getattribute
+class Scene(_star.scene):
     def __init__(self, *children):
         self._children = []
         for i in children:

@@ -2,7 +2,8 @@
 
 #include "player.hpp"
 #include "basic_types.hpp"
-#include "graphics_output.hpp"
+#include "game_window.hpp"
+#include "scene.hpp"
 
 #include "utility/function/function_v2.hpp"
 
@@ -14,7 +15,7 @@ namespace python
 {
 
 
-    /// \todo This file is pretty messy. Tidy up!
+    /// \todo This file is pretty messy. Tidy (Split!) up!
 
     namespace
     {
@@ -22,20 +23,46 @@ namespace python
 
         void null (song const&)
         {}
-        
-        void set_drawer (graphics_output::drawer_type const& func)
-        { graphics_output::instance ().set_drawer (func); }
 
-        void clear_drawer ()
-        { graphics_output::instance ().clear_drawer (); }
+        template <typename Function>
+        void safe_python_call (Function const& func)
+        {
+            try
+            {
+                func ();
+            }
+            catch (error_already_set const&)
+            {
+                handle_exception ();
+            }
+        }
+ 
+        void set_scene (scene_node_base const& s)
+        {
+            game_window::instance ().set_drawer (
+                    boost::bind (&scene_node_base::draw, s)
+                    );
+        }
 
-        void enqueue_init (graphics_output::initializer_type const& func)
-        { graphics_output::instance ().enqueue_init (func); }
+        void clear_scene ()
+        { game_window::instance ().clear_drawer (); }
+
+        void set_key_callback (game_window::key_callback_type const& cb)
+        { game_window::instance ().set_key_callback (cb, game_window::KEY_MODE); }
+
+        void set_char_callback (game_window::key_callback_type const& cb)
+        { game_window::instance ().set_key_callback (cb, game_window::CHAR_MODE); }
+
+        void clear_key_callback ()
+        { game_window::instance ().clear_key_callback (); }
+
+        void enqueue_init (game_window::initializer_type const& func)
+        { game_window::instance ().enqueue_init (func); }
 
         tuple get_dimensions ()
         {
             std::pair<std::size_t, std::size_t> const& dim =
-                graphics_output::instance ().get_dimensions ();
+                game_window::instance ().get_dimensions ();
             return make_tuple (dim.first, dim.second);
         }
 
@@ -62,8 +89,8 @@ namespace python
             ("_notes_callback_type");
         ::function::export_function<player::syllable_callback_type>
             ("_syllable_callback_type");
-//      ::function::export_function<graphics_output::drawer_type>
-//          ("_drawer_type");
+        ::function::export_function<game_window::key_callback_type>
+            ("_key_callback_type");
 
         class_<note_t> ("note_t")
             .def_readonly ("value", &note_t::value)
@@ -78,7 +105,7 @@ namespace python
             .def_readonly ("end", &syllable_t::end)
             ;
 
-        /// \todo Use get_description for __get__ 
+        /// \todo Use get_description for __getattribute__ 
         class_<song::lyrics> ("_lyrics")
             .def ("__iter__", iterator<song::lyrics> ())
             ;
@@ -99,14 +126,17 @@ namespace python
             .def ("reset_syllable_callbacks", &player::reset_syllable_callbacks)
             ;
 
-        def ("set_drawer", &set_drawer);
+        def ("set_scene", &set_scene);
+        def ("clear_scene", &clear_scene);
+        def ("set_key_callback", &set_key_callback);
+        def ("set_char_callback", &set_char_callback);
+        def ("clear_key_callback", &clear_key_callback);
         def ("enqueue_init", &enqueue_init);
-        def ("clear_drawer", &clear_drawer);
         def ("get_dimensions", &get_dimensions);
 
         ::function::register_pyobject_to_function<player::notes_callback_type> ();
         ::function::register_pyobject_to_function<player::syllable_callback_type> ();
-        // ::function::register_pyobject_to_function<graphics_output::drawer_type> ();
+        ::function::register_pyobject_to_function<game_window::key_callback_type> ();
     }
 }
 }

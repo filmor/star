@@ -2,7 +2,7 @@
 #include <boost/filesystem.hpp>
 
 #include "fmod.hpp"
-#include "graphics_output.hpp"
+#include "game_window.hpp"
 
 #define STAR_DETECTOR_POLICY fmod_detector
 
@@ -24,7 +24,7 @@ void python_thread (bp::str path, bp::object global)
         PyErr_Print ();
     }
 
-    graphics_output::instance ().close_window ();
+    game_window::instance ().close ();
 }
 
 int main (int argc, char** argv)
@@ -39,7 +39,6 @@ int main (int argc, char** argv)
         bp::object builtin = bp::import ("__builtin__").attr ("__dict__");
 
         /// Create the pseudo built-in module _star
-        /// \todo __builtins__ is forbidden. Use __builtin__ instead.
         bp::object star (bp::handle<> (PyModule_New ("_star")));
         builtin["_star"] = star;
         {
@@ -55,7 +54,7 @@ int main (int argc, char** argv)
                              global)
                 );
 
-        graphics_output::instance ().draw ();
+        game_window::instance ().draw ();
 
         /// \todo Handle closing of the graphics window
         py_thread.join ();

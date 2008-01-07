@@ -37,12 +37,14 @@ namespace star
             return result;
         }
 
+        /// Reads exactly one byte (often needed).
         template <typename IteratorT>
         boost::uint_t<8>::least read_byte (IteratorT& i)
         {
             return read_integer (i, 1);
         }
 
+        /// Reads a string.
         template <typename IteratorT>
         std::string read_string (IteratorT& i, std::size_t Size)
         {
@@ -53,6 +55,7 @@ namespace star
             return result;
         }
 
+        /// Reads a variable length integer from the midi stream.
         template <typename IteratorT>
         boost::uint_t<32>::least read_var_len (IteratorT& i)
         {
@@ -64,7 +67,6 @@ namespace star
 
             return result;
         }
-                
 
         template <typename ContainerT, typename IteratorT>
         void parse_track (ContainerT& container, IteratorT& iter)
@@ -72,7 +74,7 @@ namespace star
             /// Define byte type and status type for later use.
             typedef midi_data::byte_t byte_t;
             typedef boost::uint_t<32>::least uint32_t;
-            /// Bitmasks seems not to be portable
+            /// Bitmasks don't seem to be portable
             typedef struct { byte_t channel; byte_t opcode; } status_type;
 
             /// Read the track header.
@@ -102,74 +104,76 @@ namespace star
                                      , (status_byte & 0xf0) >> 4
                                      };
 
-                if (status.opcode < 0x8)
-                {
-                    --i;
-                    status = running_status;
-                    SHOW("===")
-                }
-
 #define MIDI_EVENT(OPCODE, TYPE, CODE) \
-    if (status.opcode == OPCODE) \
-    { \
-        TYPE ev; \
-        ev.channel = status.channel; \
-        ev.delay = ticks; \
-        CODE; \
-        container.push_back (ev); \
-    }
+    case OPCODE: \
+        { \
+            TYPE ev; \
+            ev.channel = status.channel; \
+            ev.delay = ticks; \
+            CODE; \
+            container.push_back (ev); \
+        } \
+        break;
 
+                switch (status.opcode)
+                {
                 MIDI_EVENT(0x8, midi_data::key_release, 
                         ev.note = read_byte (i); ev.velocity = read_byte (i)
-                        );
+                        )
 
                 MIDI_EVENT(0x9, midi_data::key_press,
                         ev.note = read_byte (i); ev.velocity = read_byte (i)
-                        );
+                        )
 
                 MIDI_EVENT(0xa, midi_data::key_aftertouch,
                         ev.note = read_byte (i); ev.velocity = read_byte (i)
-                        );
+                        )
 
                 MIDI_EVENT(0xb, midi_data::control_change, 
                         ev.controller = read_byte (i); ev.value = read_byte (i)
-                        );
+                        )
 
                 MIDI_EVENT(0xc, midi_data::patch_change, 
                         ev.program = read_byte (i);
-                        );
+                        )
                 
                 MIDI_EVENT(0xd, midi_data::channel_aftertouch,
                         ev.touched_channel = read_byte (i)
-                        );
+                        )
 
                 MIDI_EVENT(0xe, midi_data::pitch_wheel_change,
                         ev.value = (read_byte (i) << 7) | read_byte (i)
-                        );
-#undef MIDI_EVENT
+                        )
 
                 /// \todo Handle Sequence Number, Trackname, and End-of-Track properly
-                if (status.opcode == 0xf && status.channel == 0xf)
-                {
-                    midi_data::meta_event ev;
-                    ev.delay = ticks;
-                    ev.type = read_byte (i);
-                    SHOW(unsigned(ev.type));
-                    /// \todo End-of-Track handling (by policy?)
-                    if (ev.type == 0x2f)
+                case 0xf:
+                    if (status.channel == 0xf)
                     {
-                        read_byte (i);
-                        break;
+                        midi_data::meta_event ev;
+                        ev.delay = ticks;
+                        ev.type = read_byte (i);
+                        SHOW(unsigned(ev.type));
+                        /// \todo End-of-Track handling (by policy?)
+                        if (ev.type == 0x2f)
+                        {
+                            read_byte (i);
+                            break;
+                        }
+                        const uint32_t len = read_var_len (i);
+                        ev.data = read_string (i, len);
+                        container.push_back (ev);
                     }
-                    const uint32_t len = read_var_len (i);
-                    ev.data = read_string (i, len);
-                    container.push_back (ev);
-                }
+                    /// Ignore SYSEX for now
+                    else if (status_byte == 0xf0)
+                        while ((status_byte = read_byte (i)) != 0xf7)
+                            ;
+                    break;
 
-                /// Ignore SYSEX for now
-                if (status_byte == 0xf0)
-                    while ((status_byte = read_byte (i)) != 0xf7)
-                        ;
+                default:
+                    --i;
+                    status = running_status;
+                    SHOW("===");
+                }
 
                 running_status = status;
             }

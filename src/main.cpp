@@ -1,5 +1,7 @@
 #include <boost/python.hpp>
 #include <boost/filesystem.hpp>
+#include <iostream>
+#include <stdexcept>
 
 #include "fmod.hpp"
 #include "game_window.hpp"
@@ -22,6 +24,14 @@ void python_thread (bp::str path, bp::object global)
     catch (boost::python::error_already_set const&)
     {
         PyErr_Print ();
+    }
+    catch (std::exception const& exc)
+    {
+        std::cerr << exc.what () << std::endl;
+    }
+    catch (...)
+    {
+        std::cerr << "Error in Python thread, bitch!" << std::endl;
     }
 
     game_window::instance ().close ();

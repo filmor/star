@@ -13,10 +13,13 @@
 #include <boost/ref.hpp>
 #include <boost/bind.hpp>
 
+#include "ultrastar.hpp"
+
 #include "fmod.hpp"
 #define STAR_DETECTOR_POLICY fmod_detector
 
-#include "utility/midi/midi_parser.hpp"
+#include "utility/midi/parser.hpp"
+#include "utility/midi/midi_dispatcher.hpp"
 
 namespace bf = boost::filesystem;
 namespace bp = boost::python;
@@ -72,28 +75,42 @@ namespace star
             double _duration;
             song::data_type& _vector;
         };
+
+        bool is_star_package (bf::path const&)
+        {
+            return false;
+        }
+
     }
     
     /// \todo Implement converters (from UltraStar to smf)
     song::song (bf::path const& path)
         : _path (path)
     {
-        bf::ifstream lyrics (_path / "lyrics", std::ios::binary);
-        lyrics.unsetf (std::ios::skipws);
+        if (is_star_package (path))
+        {
+            bf::ifstream lyrics (_path / "lyrics", std::ios::binary);
+            lyrics.unsetf (std::ios::skipws);
 
-        /// istream_iterator is not bidirectional, but currently midi_data requires
-        /// op-- for running statusses.
-        std::vector<unsigned char> d;
-        std::copy (std::istream_iterator<unsigned char> (lyrics),
-                   std::istream_iterator<unsigned char> (), std::back_inserter (d));
+            bp::exec_file (bp::str ((_path / "description").native_file_string ()),
+                        _desc, _desc);
 
-        midi_data data (d);
 
-        (make_dispatcher (lyrics_getter_visitor (_lyrics_data, data.get_division ())))
-            (data, 0);
+            midi_data data = parse_midi (
+                    std::istream_iterator<unsigned char> (lyrics),
+                    std::istream_iterator<unsigned char> ()
+                );
 
-        bp::exec_file (bp::str ((_path / "description").native_file_string ()),
-                       _desc, _desc);
+            
+            (make_dispatcher 
+                (lyrics_getter_visitor (_lyrics_data, data.get_division ()))
+            )
+            .dispatch (data, 0);
+        }
+        else
+        {
+            load_ultrastar_song (path, _lyrics_data, _desc);
+        }
     }
 
     audio_stream song::get_audio_stream (unsigned char s) const

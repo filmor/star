@@ -1,5 +1,6 @@
 #include "player.hpp"
 
+#include "utility/midi/midi_dispatcher.hpp"
 #include "pitch_detector.hpp"
 
 #include <algorithm>
@@ -17,6 +18,10 @@ namespace star
     namespace
     {
         static const duration_t resolution = 200;
+
+        struct visitor : midi_visitor<void>
+        {
+        };
     }
     
     /// \todo Rewrite using midi_dispatcher

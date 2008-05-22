@@ -126,6 +126,14 @@ namespace python
             .def ("reset_syllable_callbacks", &player::reset_syllable_callbacks)
             ;
 
+
+        ::function::register_pyobject_to_function<player::notes_callback_type> ();
+        ::function::register_pyobject_to_function<player::syllable_callback_type> ();
+        ::function::register_pyobject_to_function<game_window::key_callback_type> ();
+    }
+
+    void module_star_graphics ()
+    {
         def ("set_scene", &set_scene);
         def ("clear_scene", &clear_scene);
         def ("set_key_callback", &set_key_callback);
@@ -133,10 +141,6 @@ namespace python
         def ("clear_key_callback", &clear_key_callback);
         def ("enqueue_init", &enqueue_init);
         def ("get_dimensions", &get_dimensions);
-
-        ::function::register_pyobject_to_function<player::notes_callback_type> ();
-        ::function::register_pyobject_to_function<player::syllable_callback_type> ();
-        ::function::register_pyobject_to_function<game_window::key_callback_type> ();
     }
 }
 }

@@ -1,9 +1,8 @@
 #include "song.hpp"
+#include "python.hpp"
 
 #include <boost/filesystem/path.hpp>
 #include <boost/filesystem/fstream.hpp>
-#include <boost/python/exec.hpp>
-#include <boost/python/extract.hpp>
 
 #include <vector>
 #include <iterator>
@@ -92,13 +91,17 @@ namespace star
         (make_dispatcher (lyrics_getter_visitor (_lyrics_data, data.get_division ())))
             (data, 0);
 
-        bp::exec_file (bp::str ((_path / "description").native_file_string ()),
-                       _desc, _desc);
+        {
+            python::restricted_env env;
+            python::exec_file((python::str ((_path / "description").file_string ())),
+                              _desc, _desc);
+        }
     }
 
     audio_stream song::get_audio_stream (unsigned char s) const
     {
-        return audio_stream (bp::extract<std::string> (_desc["audio_type"]),
+        /// \todo Restrict also the extraction?!
+        return audio_stream (python::extract<std::string> (_desc["audio_type"]),
                              _path / "audio");
     }
 

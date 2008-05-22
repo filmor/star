@@ -11,6 +11,9 @@ namespace star
     {
         glPushMatrix ();
 
+        if (_override)
+            glLoadIdentity ();
+
         glMultMatrixd (_matrix.data ().begin ());
 
         this->do_draw ();

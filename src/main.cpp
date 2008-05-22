@@ -44,6 +44,7 @@ int main (int argc, char** argv)
         {
             bp::scope s (star);
             python::module_star ();
+            python::module_star_graphics ();
         }
 
         bf::path main_py ("python/main.py");

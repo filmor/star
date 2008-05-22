@@ -65,20 +65,35 @@ namespace star
         scalar const& y = q.R_component_3 ();
         scalar const& z = q.R_component_4 ();
 
-        /// \todo Should be zeroed out before.
-        matrix res;
+        matrix res = identity_matrix ();
 
-        res(0, 0) = 1 -  2. * (y*y + z*z);
-        res(0, 1) = 2. * (x*y - w*z);
-        res(0, 2) = 2. * (w*y + x*z);
+        res(0, 0) -= 2. * (y*y + z*z);
+        res(0, 1) =  2. * (x*y - w*z);
+        res(0, 2) =  2. * (w*y + x*z);
 
-        res(1, 0) = 2. * (w*z + x*y);
-        res(1, 1) = 1. - 2. * (x*x + z*z);
-        res(1, 2) = 2. * (y*z - w*x);
+        res(1, 0) =  2. * (w*z + x*y);
+        res(1, 1) -= 2. * (x*x + z*z);
+        res(1, 2) =  2. * (y*z - w*x);
         
-        res(2, 0) = 2. * (x*z - w*y);
-        res(2, 1) = 2. * (w*x + y*z);
-        res(2, 2) = 1. - 2. * (x*x + y*y);
+        res(2, 0) =  2. * (x*z - w*y);
+        res(2, 1) =  2. * (w*x + y*z);
+        res(2, 2) -= 2. * (x*x + y*y);
+
+        return res;
+    }
+
+    /// Create an orthogonal projection matrix
+    inline matrix orthogonal_projection (scalar right, scalar left, scalar bottom,
+                                         scalar top, scalar near_val, scalar far_val)
+    {
+        matrix res = identity_matrix ();
+
+        res(0, 0) = right - left;
+        res(0, 3) = -res(0, 0);
+        res(1, 1) = top - bottom;
+        res(1, 3) = -res(1, 1);
+        res(2, 2) = far_val - near_val;
+        res(2, 3) = -res(2, 2);
 
         return res;
     }

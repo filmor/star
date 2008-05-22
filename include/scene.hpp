@@ -31,13 +31,17 @@ namespace star
          */
         scene_node_base (vector const& trans = zero_vector (),
                          quaternion const& rot = 1)
-        {
-            _matrix =
-                    prod (rotation_from_quaternion (rot)
-                         ,translation_from_vector (trans)
-                         )
-                    ;
-        }
+            : _matrix (prod (rotation_from_quaternion (rot)
+                            ,translation_from_vector (trans)
+                            )
+                    )
+            , _override (false)
+        {}
+
+        scene_node_base (matrix const& m, bool override = false)
+            : _matrix (m)
+            , _override (override)
+        {}
 
         /// Virtual destructor, as this class is intended to be used runtime
         /// polymorphic.
@@ -58,10 +62,14 @@ namespace star
          * draw for themselves but let their children do the work.
          */
         virtual void do_draw () {}
+
+        /// Set the projection matrix for this scene (and of course its ancestors)
+        void set_matrix (matrix const& m) { _matrix = m; }
         
     private:
         /// Combined rotation and translation matrix.
         matrix _matrix;
+        bool _override;
         /// Child nodes.
         std::vector<ptr_type> _children;
     };

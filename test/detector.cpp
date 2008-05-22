@@ -18,7 +18,7 @@ int main ()
         boost::xtime_get (&xt, boost::TIME_UTC);
         xt.nsec += 1 << 16;
         boost::thread::sleep (xt);
-        note n = pd (200);
+        note_t n = pd (200);
         std::cout << n.value << ' ' << n.octave << "        " << std::flush;
     }
 }

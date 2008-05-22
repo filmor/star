@@ -6,6 +6,8 @@
     if (!(expression)) \
         throw exception ();
 
+/// \todo Document!
+
 #if 0 // ndef NDEBUG
 #include <boost/preprocessor.hpp>
 #include <iostream>
@@ -20,10 +22,6 @@ namespace star
 {
     namespace
     {
-        struct midi_exception : public std::exception {};
-        struct not_a_midi_file : public midi_exception {};
-        struct invalid_track : public midi_exception {};
-
         /// Reads an unsigned integer in big endian format while moving the
         /// iterator.
         template <typename IteratorT>
@@ -94,7 +92,9 @@ namespace star
             {
                 midi_data::ticks_t ticks = read_var_len (i);
 
-                SHOW(ticks)
+                SHOW(ticks);
+
+                IteratorT prev = i;
 
                 byte_t status_byte = read_byte (i);
 
@@ -121,9 +121,20 @@ namespace star
                         ev.note = read_byte (i); ev.velocity = read_byte (i)
                         )
 
-                MIDI_EVENT(0x9, midi_data::key_press,
-                        ev.note = read_byte (i); ev.velocity = read_byte (i)
-                        )
+                case 0x9:
+                    {
+                        midi_data::key_press ev;
+                        ev.channel = status.channel;
+                        ev.delay = ticks;
+                        ev.note = read_byte (i); ev.velocity = read_byte (i);
+                        if (ev.velocity == 0)
+                            container.push_back (
+                                    *reinterpret_cast<midi_data::key_release*> (&ev)
+                                    );
+                        else
+                            container.push_back (ev);
+                    }
+                    break;
 
                 MIDI_EVENT(0xa, midi_data::key_aftertouch,
                         ev.note = read_byte (i); ev.velocity = read_byte (i)
@@ -170,7 +181,7 @@ namespace star
                     break;
 
                 default:
-                    --i;
+                    i = prev;
                     status = running_status;
                     SHOW("===");
                 }
@@ -182,29 +193,30 @@ namespace star
     }
 
     template <typename IteratorT>
-    void midi_data::parse_data (IteratorT begin, IteratorT end)
+    midi_data parse_midi (IteratorT begin, IteratorT end)
     {
-        /// Requirements
+        midi_data data;
 
         end_checking_iterator<IteratorT> i (begin, end);
 
         /// Parse the midi header
         ASSERT(read_string (i, 4) == "MThd", not_a_midi_file);
         ASSERT(read_integer (i, 4) == 6, not_a_midi_file);
-        _format = read_integer (i, 2);
-        ASSERT(_format < 3, not_a_midi_file);
-        _tracks.resize (read_integer (i, 2));
-        _delta_time = read_integer (i, 2);
+        data._format = read_integer (i, 2);
+        ASSERT(data._format < 3, not_a_midi_file);
+        data._tracks.resize (read_integer (i, 2));
+        data._delta_time = read_integer (i, 2);
 
         int k = 0;
 
-        BOOST_FOREACH(track& t, _tracks)
+        BOOST_FOREACH(midi_data::track& t, data._tracks)
         {
             SHOW(k)
             parse_track (t, i);
             ++k;
         }
 
+        return data;
     }
 
 }

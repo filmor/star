@@ -1,4 +1,5 @@
 #include "song.hpp"
+#include "player.hpp"
 
 void callback (star::note n, star::note sn, int)
 {
@@ -15,11 +16,11 @@ int main (int argc, char** argv)
 
         try
         {
-            star::song_info info (argv[1]);
-            star::song s (info);
+            star::song s (argv[1]);
+            star::player p (s);
 
-            s.set_notes_callback (&callback);
-            s.start ();
+            p.set_notes_callback (&callback);
+            p.start ();
         }
         catch (std::string const& s)
         {

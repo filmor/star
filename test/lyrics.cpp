@@ -12,10 +12,10 @@ int main (int argc, char** argv)
     std::cout << argv[1] << std::endl;
     star::song f (argv[1]);
     
-    star::song::lines l = f.get_lines ();
+    star::song::lyrics l = f.get_lyrics ();
     
-    for (star::song::lines::const_iterator i = l.begin (); i != l.end ();
+    for (star::song::lyrics::const_iterator i = l.begin (); i != l.end ();
             ++i)
-        std::cout << i->get<0> () <<  ' ' << i->get<1> () << std::endl;
+        std::cout << i->get<2> () << std::endl;
 }
 

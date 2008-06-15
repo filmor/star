@@ -15,9 +15,6 @@
 
 #include "ultrastar.hpp"
 
-#include "fmod.hpp"
-#define STAR_DETECTOR_POLICY fmod_detector
-
 #include "utility/midi/parser.hpp"
 #include "utility/midi/midi_dispatcher.hpp"
 

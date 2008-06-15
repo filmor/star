@@ -10,8 +10,10 @@
 #include <boost/bind.hpp>
 #include <boost/foreach.hpp>
 
+#ifndef STAR_DETECTOR_POLICY
+#define STAR_DETECTOR_POLICY ::star::fmod_detector
 #include "fmod.hpp"
-#define STAR_DETECTOR_POLICY fmod_detector
+#endif
 
 namespace star
 {
@@ -29,7 +31,7 @@ namespace star
     {
         _playing = true;
 
-        typedef pitch_detector<fmod_detector> detector;
+        typedef pitch_detector<STAR_DETECTOR_POLICY> detector;
         detector detect;
 
         song::notes n = _info.get_notes ();

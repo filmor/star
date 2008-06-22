@@ -24,6 +24,8 @@ namespace star
         desc["type"] = "ultrastar";
         desc["origin"] = input.native_file_string ();
 
+        /// \todo Actions for the rules (to fill the lyrics vector
+        /// \todo Full grammar that also parses the header
 
         rule<> syllable_rule =
             (ch_p(':') | ch_p('*')) >> uint_p >> uint_p >> lexeme_d[' ' >> *anychar_p]

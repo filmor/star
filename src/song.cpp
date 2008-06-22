@@ -28,7 +28,7 @@ namespace star
     {
         inline note_t midi_to_note_t (midi_data::byte_t b)
         {
-            /// \todo
+            /// \todo Proper conversion
             note_t res = {b % 12, b / 12};
             return res;
         }
@@ -75,6 +75,7 @@ namespace star
 
         bool is_star_package (bf::path const&)
         {
+            /// \todo
             return false;
         }
 

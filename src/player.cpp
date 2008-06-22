@@ -19,14 +19,11 @@ namespace star
 {
     namespace
     {
+        /// \todo Get from config
         static const duration_t resolution = 200;
-
-        struct visitor : midi_visitor<void>
-        {
-        };
     }
     
-    /// \todo Rewrite using midi_dispatcher
+    /// \todo Rewrite using midi_dispatcher, but not now ;)
     void player::start (song const& _info) const
     {
         _playing = true;

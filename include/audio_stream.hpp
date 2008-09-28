@@ -30,8 +30,8 @@ namespace star
         void stop ();
         void wait ();
 
-//        void synchronize (boost::date_time::duration const& /* should be */,
-//                          boost::xtime const& /* is */);
+//        void synchronize (boost::system_time const& /* should be */,
+//                          boost::system_time const& /* is */);
 
     public:
         struct stream_impl
@@ -39,7 +39,7 @@ namespace star
             virtual void play () = 0;
             virtual void stop () = 0;
             virtual void wait () = 0;
-            virtual duration_t get_pos () const = 0;
+            virtual time_duration get_pos () const = 0;
             virtual ~stream_impl () {}
         };
 

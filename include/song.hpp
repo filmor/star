@@ -21,7 +21,7 @@ namespace star
     {
     public:
         /// time, note, text
-        typedef boost::tuple<duration_t, note_t, std::string>   syllable_type;
+        typedef boost::tuple<time_duration, note_t, std::string>   syllable_type;
         typedef std::vector<syllable_type>                      data_type;
         
         typedef boost::python::dict                             desc_type;

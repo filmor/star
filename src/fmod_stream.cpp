@@ -32,21 +32,20 @@ namespace star
         STAR_FMOD_EC(_channel->stop ());
     }
 
-    duration_t fmod_stream_impl::get_pos () const
+    time_duration fmod_stream_impl::get_pos () const
     {
         unsigned int result = 0;
         STAR_FMOD_EC(_channel->getPosition (&result, FMOD_TIMEUNIT_MS));
-        return result;
+        return time_duration (result);
     }
 
     void fmod_stream_impl::wait ()
     {
         unsigned int length = 0;
         STAR_FMOD_EC(_sound->getLength(&length, FMOD_TIMEUNIT_MS));
-        length -= get_pos (); // should be safe
-        time t;
-        t += length;
-        t.wait (); // argh
+        boost::system_time t 
+            = boost::get_system_time() + time_duration (length) - get_pos ();
+        boost::thread::sleep (t); // argh
     }
 }
 

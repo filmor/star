@@ -46,7 +46,7 @@ namespace star
 
         fmod_detector ();
         
-        frequency_type get_frequency (std::size_t channel, long d);
+        frequency_type get_frequency (std::size_t channel, time_duration d);
 
     private:
         FMOD::Sound* _sound;
@@ -63,7 +63,7 @@ namespace star
         virtual void play ();
         virtual void stop ();
         virtual void wait ();
-        virtual duration_t get_pos () const;
+        virtual time_duration get_pos () const;
 
     private:
         FMOD::Sound* _sound;

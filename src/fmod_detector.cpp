@@ -35,7 +35,7 @@ namespace star
     }
 
     fmod_detector::frequency_type fmod_detector::get_frequency
-        (std::size_t channel, long d)
+        (std::size_t channel, time_duration d)
     {
         static const std::size_t ssize = 2048;
         float spectrum[ssize];

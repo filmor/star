@@ -51,7 +51,7 @@ namespace star
                 if (ev.type == 0x05) // lyric event
                 {
                     _vector.push_back (
-                            boost::make_tuple ( duration_t (_duration)
+                            boost::make_tuple ( time_duration (_duration)
                                               , _note, ev.data)
                             );
                     _duration = 0.;

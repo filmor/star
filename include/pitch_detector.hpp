@@ -12,7 +12,7 @@ namespace star
     class pitch_detector : public DetectorPolicy
     {
     public:
-        note_t operator () (duration_t d)
+        note_t operator () (time_duration d)
         {
             const int a = 9;
             const double eps = 0.01;

@@ -20,7 +20,7 @@ namespace star
     namespace
     {
         /// \todo Get from config
-        static const duration_t resolution = 200;
+        static const time_duration resolution = milliseconds (200);
     }
     
     /// \todo Rewrite using midi_dispatcher, but not now ;)
@@ -36,7 +36,7 @@ namespace star
 
         boost::thread_group tg;
         
-        time t;
+        boost::system_time t = boost::get_system_time ();
 
         as.play ();
 
@@ -46,25 +46,24 @@ namespace star
                 BOOST_FOREACH(syllable_callback_type const& cb, _syllable_callbacks)
                     cb ();
 
-            duration_t const& duration = i->get<0> ();
+            time_duration const& duration = i->get<0> ();
 
             if (_notes_callback)
             {
                 note_t const& note = i->get<1> ();
 
-                duration_t const start = t;
-                duration_t const end = start + duration;
-
-                syllable_t syl = { start, start, end };
+                syllable_t syl = { time_period (t, duration), milliseconds (0) };
                 
                 /// \todo Handle unfitting note lengthes properly
-                for (; syl.pos < syl.end; syl.pos += resolution)
+                for (time_iterator i (syl.period.begin (), resolution);
+                     i != syl.period.end (); ++i)
                 {
-                    t += resolution;
-                    t.wait ();
+                    boost::thread::sleep (*i);
                     _notes_callback (note, detect (resolution), syl);
                 }
             }
+
+            t += duration;
         }
 
         as.wait ();

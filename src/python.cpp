@@ -100,9 +100,8 @@ namespace python
         typedef player::syllable_t syllable_t;
 
         class_<syllable_t> ("syllable_t")
-            .def_readonly ("start", &syllable_t::start)
-            .def_readonly ("pos", &syllable_t::pos)
-            .def_readonly ("end", &syllable_t::end)
+           // .def_readonly ("period", &syllable_t::period)
+           // .def_readonly ("pos", &syllable_t::pos)
             ;
 
         /// \todo Use get_description for __getattribute__ 

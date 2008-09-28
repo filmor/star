@@ -15,9 +15,8 @@ namespace star
         /// \todo Rename! (candidates: lyrics_item, )
         struct syllable_t
         {
-            duration_t start;
-            duration_t pos;
-            duration_t end;
+            time_period period;
+            time_duration pos;
         };
 
         typedef boost::function<void (note_t, note_t, syllable_t)>

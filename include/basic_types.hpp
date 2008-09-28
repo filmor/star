@@ -23,45 +23,11 @@ namespace star
              , Fis = 6, G = 7, Gis = 8, A = 9, Ais = 10, B = 11 };
     };
 
-    /// Holds a time duration im milliseconds.
-    /// 24 Bit are enough for about 4 hours.
-    typedef boost::uint_t<24>::fast duration_t;
-
-    /**
-     * Time class.
-     *
-     * Simplifies the use of the boost::xtime struct and functions.
-     */
-    class time
-    {
-    public:
-        /// Initializes with "now".
-        time () { boost::xtime_get (&_xt, boost::TIME_UTC); }
-
-        time (time const& other) : _xt (other._xt) {}
-
-        /// \return Time in milliseconds.
-        operator duration_t () { return _xt.sec * 1000 + _xt.nsec / 1000000; }
-
-        /// Adds a duration to the time.
-        time& operator+= (duration_t milliseconds)
-        {
-            _xt.sec += milliseconds / 1000;
-            _xt.nsec += (milliseconds % 1000) * 1000000;
-            return *this;
-        }
-
-        /// Let's the calling thread fall asleep until the point of time is over.
-        void wait () const { boost::thread::sleep (_xt); }
-
-    protected:
-        boost::xtime& get_xtime () { return _xt; }
-        boost::xtime const& get_xtime () const { return _xt; }
-
-    private:
-        /// Storage for the point of time
-        boost::xtime _xt;
-    };
+    using boost::posix_time::time_period;
+    using boost::posix_time::time_iterator;
+    using boost::posix_time::milliseconds;
+    typedef boost::posix_time::millisec time_duration;
+    typedef boost::posix_time::ptime time_point;
 
 }
 

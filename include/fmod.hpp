@@ -9,19 +9,44 @@
 #include <stdexcept>
 #include <fmodex/fmod.hpp>
 
-#include <boost/preprocessor/stringize.hpp>
-
 #ifndef NDEBUG
-#define STAR_FMOD_EC(expr) \
-    error_check (BOOST_PP_STRINGIZE(expr), (expr))
+#   include <boost/preprocessor/stringize.hpp>
+#   define STAR_FMOD_EC(expr) \
+        error_check (BOOST_PP_STRINGIZE(expr), (expr))
 #else
-#define STAR_FMOD_EC(expr) expr
+#   define STAR_FMOD_EC(expr) expr
 #endif
 
 namespace star
 {
     namespace detail
     {
+        class fmod_config : public config::facility
+        {
+        public:
+            struct device_t : public dynamic_choice<device_t, int>
+            {
+            public:
+                choices_type get_choices () const
+                {
+                    static choices_type _choices;
+                    if (!_choices)
+                    {
+                        _choices.add
+                            (0, "Blubb")
+                            (2, "Blabb")
+                            ;
+                    }
+                    return _choices;
+                }
+            };
+            
+            device_t output_device;
+            // Combine system and output ("alsa", "emu10k1"), ("oss", "emu10k1") etc.
+
+            device_t input_device;
+        };
+
         class fmod_base
         {
         protected:

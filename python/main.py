@@ -4,24 +4,32 @@ sys.path += ['python']
 try:
     # import Star
 
-    from IPython.Shell import IPShellEmbed
+#    from IPython.Shell import IPShellEmbed
 
-    ipshell = IPShellEmbed()
-    ipshell()
+#    ipshell = IPShellEmbed()
+#    ipshell()
 
-    from Star.Graphics import Scene, StarBackground, WaterGround
+#    from Star.Graphics import Scene, StarBackground, WaterGround
 
 # \todo Setup standard scene:
 #       - star background
 #       - water ground
-    base_scene = Scene()
-    base_scene.background = StarBackground()
-    base_scene.ground = WaterGround()
-    base_scene()
+#    base_scene = Scene()
+#    base_scene.background = StarBackground()
+#    base_scene.ground = WaterGround()
+#    ScreenManager.background = base_scene
 
-    import main_menu
+    from Screens import Menu
 
-    raw_input()
+    main_menu = Menu("Star",
+                    [
+                        ("Play", PlayMenu),
+                        ("Settings", SettingsMenu),
+                        ("Quit", lambda : sys.exit(0)),
+                    ]
+                    )
+    
+    main_menu()
 
 except:
     import sys, traceback

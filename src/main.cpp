@@ -5,6 +5,7 @@
 
 #include "fmod.hpp"
 #include "game_window.hpp"
+#include "screen_manager.hpp"
 
 #define STAR_DETECTOR_POLICY fmod_detector
 
@@ -15,8 +16,24 @@ namespace bf = boost::filesystem;
 
 using namespace star;
 
-void python_thread (bp::str path, bp::object global)
+void thread_main ()
 {
+    bp::str path (bf::path ("python/main.py").file_string ());
+
+    bp::object global = bp::import ("__main__").attr ("__dict__");
+    bp::object builtin = bp::import ("__builtin__").attr ("__dict__");
+
+    screen_manager manager;
+
+    /// Create the pseudo built-in module _star
+    bp::object star (bp::handle<> (PyModule_New ("_star")));
+    builtin["_star"] = star;
+    {
+        bp::scope s (star);
+        python::module_star ();
+        python::module_star_graphics ();
+    }
+
     try
     {
         bp::exec_file (path, global, global);
@@ -31,7 +48,7 @@ void python_thread (bp::str path, bp::object global)
     }
     catch (...)
     {
-        std::cerr << "Error in Python thread, bitch!" << std::endl;
+        std::cerr << "Error in Program thread, bitch!" << std::endl;
     }
 
     game_window::instance ().close ();
@@ -45,30 +62,15 @@ int main (int argc, char** argv)
         Py_Initialize ();
         PySys_SetArgv (argc, argv);
 
-        bp::object global = bp::import ("__main__").attr ("__dict__");
-        bp::object builtin = bp::import ("__builtin__").attr ("__dict__");
+        // Setup configuration data
 
-        /// Create the pseudo built-in module _star
-        bp::object star (bp::handle<> (PyModule_New ("_star")));
-        builtin["_star"] = star;
-        {
-            bp::scope s (star);
-            python::module_star ();
-            python::module_star_graphics ();
-        }
-
-        bf::path main_py ("python/main.py");
-
-        boost::thread py_thread (
-                boost::bind (&python_thread,
-                             bp::str (main_py.native_file_string ()),
-                             global)
-                );
+        // Give the configuration data to program_thread
+        boost::thread program_thread (&thread_main);
 
         game_window::instance ().draw ();
 
         /// \todo Handle closing of the graphics window
-        py_thread.join ();
+        program_thread.join ();
     }
     catch (boost::python::error_already_set const&)
     {

@@ -8,7 +8,7 @@
 #include <boost/python/long.hpp>
 #include <boost/python/str.hpp>
 #include <boost/range.hpp>
-#include <boost/spirit/rule.hpp>
+#include <boost/spirit.hpp>
 
 namespace bf = boost::filesystem;
 

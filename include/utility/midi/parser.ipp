@@ -72,7 +72,7 @@ namespace star
             /// Define byte type and status type for later use.
             typedef midi_data::byte_t byte_t;
             typedef boost::uint_t<32>::least uint32_t;
-            /// Bitmasks don't seem to be portable
+            /// Bitmasks seem not to be very portable
             typedef struct { byte_t channel; byte_t opcode; } status_type;
 
             /// Read the track header.

@@ -63,6 +63,14 @@ int main (int argc, char** argv)
         PySys_SetArgv (argc, argv);
 
         // Setup configuration data
+        config& cfg = config::instance ();
+
+        cfg.add_source (new command_line_source (argc, argv));
+        try
+        {
+            cfg.add_source (new python_source (cfg.get<bf::path> ("config_file")));
+        }
+        catch (file_not_found&) {}
 
         // Give the configuration data to program_thread
         boost::thread program_thread (&thread_main);

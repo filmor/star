@@ -19,6 +19,7 @@ namespace detail
     {
         if (_system == 0)
         {
+<<<<<<< HEAD:src/fmod.cpp
             
             STAR_FMOD_EC(FMOD::System_Create (&_system));
 
@@ -26,6 +27,10 @@ namespace detail
                           config::instance ().get<fmod_facility::output> ()
                         ));
                         */
+            fmod_config config;
+            
+            STAR_FMOD_EC(FMOD::System_Create (&_system));
+            STAR_FMOD_EC(_system->setOutput (config.output.get<int> ()));
 
             STAR_FMOD_EC(_system->setSoftwareFormat (44100, FMOD_SOUND_FORMAT_PCM16
                                                 , 2, 0, FMOD_DSP_RESAMPLER_LINEAR)

@@ -23,27 +23,16 @@ namespace detail
     {
         if (_system == 0)
         {
-<<<<<<< config:src/fmod.cpp
-            FMOD_RESULT result = FMOD::System_Create (&_system);
-            error_check ("", result);
-=======
             fmod_config config;
             
             STAR_FMOD_EC(FMOD::System_Create (&_system));
->>>>>>> local:src/fmod.cpp
 
-<<<<<<< config:src/fmod.cpp
-//            error_check ("", _system->setOutput (FMOD_OUTPUTTYPE_SOUNDMANAGER));
-=======
-            STAR_FMOD_EC(_system->setOutput (config.output.get<int> ()));
->>>>>>> local:src/fmod.cpp
+            STAR_FMOD_EC(_system->setOutput (config.output_device));
 
-            result = _system->setSoftwareFormat (44100, FMOD_SOUND_FORMAT_PCM16
-                                                , 2, 0, FMOD_DSP_RESAMPLER_LINEAR);
-            error_check ("", result);
+            STAR_FMOD_EC(_system->setSoftwareFormat (44100, FMOD_SOUND_FORMAT_PCM16
+                         , 2, 0, FMOD_DSP_RESAMPLER_LINEAR));
 
-            result = _system->init(32, FMOD_INIT_NORMAL, 0);
-            error_check ("", result);
+            STAR_FMOD_EC(_system->init(32, FMOD_INIT_NORMAL, 0));
         }
 
         return *_system;

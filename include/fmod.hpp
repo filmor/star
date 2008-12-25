@@ -24,7 +24,7 @@ namespace star
         class fmod_config : public config::facility
         {
         public:
-            struct device_t : public dynamic_choice<device_t, int>
+            struct device_t : public dynamic_choice<device_t, FMOD_OUTPUTTYPE>
             {
             public:
                 choices_type get_choices () const
@@ -32,9 +32,9 @@ namespace star
                     static choices_type _choices;
                     if (!_choices)
                     {
-                        _choices.add
-                            (0, "Blubb")
-                            (2, "Blabb")
+                        _choices.add()
+                     //       (0, "Blubb")
+                     //       (2, "Blabb")
                             ;
                     }
                     return _choices;
@@ -57,13 +57,6 @@ namespace star
             static FMOD::System* _system;
         };
 
-        struct fmod_facility : public config::facility<fmod_facility>
-        {
-            config_element<config::choice, config::needs_restart> output;
-            config_list<
-                 config_element<config::choice>
-                > inputs;
-        };
     }
 
     class fmod_exception : public std::runtime_error

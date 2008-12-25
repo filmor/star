@@ -37,12 +37,12 @@ int main (int argc, char** argv)
 
         config& cfg = config::instance ();
 
-        cfg.add_source (new command_line_source (argc, argv));
+/*        cfg.add_source (new command_line_source (argc, argv));
         try
         {
             cfg.add_source (new python_source (cfg.get<bf::path> ("config_file")));
         }
-        catch (file_not_found&) {}
+        catch (file_not_found&) {} */
 
         bp::object global = bp::import ("__main__").attr ("__dict__");
         bp::object builtin = bp::import ("__builtin__").attr ("__dict__");

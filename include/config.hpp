@@ -4,8 +4,8 @@
 #include <string>
 
 #include <boost/utility.hpp>
-#include <boost/python/dict.hpp>
-#include <boost/python/extract.hpp>
+#include <boost/any.hpp>
+#include <tr1/unordered_map>
 
 namespace star
 {
@@ -14,7 +14,7 @@ namespace star
     class config : boost::noncopyable
     {
     public:
-        typedef boost::python::dict data_type;
+        typedef std::tr1::unordered_map<std::string, boost::any> data_type;
 
         static config& instance ()
         {
@@ -25,7 +25,7 @@ namespace star
         template <typename T>
         T get (std::string const& name) const
         {
-            return boost::python::extract<T> (_data[name]);
+            return boost::any_cast<T> (_data[name]);
         }
 
         template <typename T>

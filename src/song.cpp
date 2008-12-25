@@ -2,8 +2,6 @@
 
 #include <boost/filesystem/path.hpp>
 #include <boost/filesystem/fstream.hpp>
-#include <boost/python/exec.hpp>
-#include <boost/python/extract.hpp>
 
 #include <vector>
 #include <iterator>
@@ -13,13 +11,14 @@
 #include <boost/ref.hpp>
 #include <boost/bind.hpp>
 
+#include <luabind/operator.hpp>
+
 #include "ultrastar.hpp"
 
 #include "utility/midi/parser.hpp"
 #include "utility/midi/midi_dispatcher.hpp"
 
 namespace bf = boost::filesystem;
-namespace bp = boost::python;
 
 namespace star
 {
@@ -83,50 +82,53 @@ namespace star
     
     /// \todo Implement converters (from UltraStar to smf)
     song::song (bf::path const& path)
-        : _path (path)
+        : path_ (path)
     {
         if (is_star_package (path))
         {
-            bf::ifstream lyrics (_path / "lyrics", std::ios::binary);
-            lyrics.unsetf (std::ios::skipws);
+            bf::ifstream lyrics(path_ / "lyrics", std::ios::binary);
+            lyrics.unsetf(std::ios::skipws);
 
-            bp::exec_file (bp::str ((_path / "description").native_file_string ()),
-                        _desc, _desc);
+            //bp::exec_file (bp::str ((_path / "description").native_file_string ()),
+            //            _desc, _desc);
+            //
+
+            // desc_ = load_ini_file(_path / "description")
 
 
-            midi_data data = parse_midi (
-                    std::istream_iterator<unsigned char> (lyrics),
-                    std::istream_iterator<unsigned char> ()
+            midi_data data = parse_midi(
+                    std::istream_iterator<unsigned char>(lyrics),
+                    std::istream_iterator<unsigned char>()
                 );
 
             
             (make_dispatcher 
-                (lyrics_getter_visitor (_lyrics_data, data.get_division ()))
+                (lyrics_getter_visitor (lyrics_data_, data.get_division()))
             )
             .dispatch (data, 0);
         }
         else
         {
-            load_ultrastar_song (path, _lyrics_data, _desc);
+            load_ultrastar_song (path, lyrics_data_, desc_);
         }
     }
 
     audio_stream song::get_audio_stream (unsigned char s) const
     {
-        return audio_stream (bp::extract<std::string> (_desc["audio_type"]),
-                             _path / "audio");
+        return audio_stream(luabind::tostring_operator(desc_["audio_type"]),
+                            path_ / "audio");
     }
 
     song::notes song::get_notes (unsigned char s) const
     {
-        return boost::make_iterator_range (notes_iterator (_lyrics_data.begin ()),
-                                           notes_iterator (_lyrics_data.end ())
-                                          );
+        return boost::make_iterator_range(notes_iterator(lyrics_data_.begin()),
+                                          notes_iterator(lyrics_data_.end())
+                                         );
     }
 
     song::lyrics song::get_lyrics (unsigned char track) const
     {
-        return boost::make_iterator_range (_lyrics_data.begin (), _lyrics_data.end ());
+        return boost::make_iterator_range (lyrics_data_.begin(), lyrics_data_.end());
     }
 
 }

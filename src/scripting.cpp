@@ -1,4 +1,4 @@
-#include "python.hpp"
+/*#include "python.hpp"
 
 #include "player.hpp"
 #include "basic_types.hpp"
@@ -138,4 +138,4 @@ namespace python
         ::function::register_pyobject_to_function<game_window::key_callback_type> ();
     }
 }
-}
+}*/

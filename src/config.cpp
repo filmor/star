@@ -1,8 +1,7 @@
 #include "config.hpp"
 
 #include <boost/filesystem/path.hpp>
-#include <boost/python/exec.hpp>
-#include <boost/python/str.hpp>
+#include <luabind/luabind.hpp>
 
 namespace star
 {
@@ -19,8 +18,7 @@ namespace star
 
     void config::load_source (std::string const& str)
     {
-        boost::python::exec (boost::python::str (str),
-                             _data, _data);
+        /// Lua
     }
 
 }

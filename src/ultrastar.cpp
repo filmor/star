@@ -5,8 +5,6 @@
 #include <boost/algorithm/string/case_conv.hpp>
 #include <boost/algorithm/string/trim.hpp>
 #include <boost/algorithm/string/replace.hpp>
-#include <boost/python/long.hpp>
-#include <boost/python/str.hpp>
 #include <boost/range.hpp>
 #include <boost/spirit.hpp>
 
@@ -18,8 +16,7 @@ namespace star
     void load_ultrastar_song (bf::path const& input, song::data_type& data,
                               song::desc_type& desc)
     {
-        using namespace boost;
-        using namespace spirit;
+        using namespace boost::spirit;
 
         desc["type"] = "ultrastar";
         desc["origin"] = input.native_file_string ();
@@ -58,11 +55,11 @@ namespace star
                 
                 std::string name (line.begin () + 1, delimiter);
 
-                algorithm::to_lower (name);
+                boost::algorithm::to_lower (name);
 
                 std::string value (delimiter + 1, line.end ());
 
-                algorithm::trim (value);
+                boost::algorithm::trim (value);
 
                 if (name == "mp3")
                 {
@@ -74,7 +71,7 @@ namespace star
                     desc["language"] = "en";
                 else if (name == "bpm" || name == "gap")
                 {
-                    algorithm::replace_first (value, ",", ".");
+                    boost::algorithm::replace_first (value, ",", ".");
                     /// Aye, no float available :(
                     desc[name] = value;
                 }

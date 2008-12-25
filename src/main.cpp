@@ -1,79 +1,52 @@
-#include <boost/python.hpp>
 #include <boost/filesystem.hpp>
 #include <iostream>
-#include <stdexcept>
 
-#include "fmod.hpp"
 #include "game_window.hpp"
+#include "screen_manager.hpp"
 
-#define STAR_DETECTOR_POLICY fmod_detector
+#include <boost/filesystem/path.hpp>
+#include <boost/filesystem/operations.hpp>
 
-#include "python.hpp"
-
-namespace bp = boost::python;
 namespace bf = boost::filesystem;
 
 using namespace star;
 
-void python_thread (bp::str path, bp::object global)
+void game_thread()
 {
-    try
     {
-        bp::exec_file (path, global, global);
-    }
-    catch (boost::python::error_already_set const&)
-    {
-        PyErr_Print ();
-    }
-    catch (std::exception const& exc)
-    {
-        std::cerr << exc.what () << std::endl;
-    }
-    catch (...)
-    {
-        std::cerr << "Error in Python thread, bitch!" << std::endl;
+        screen_manager manager(game_window::instance());
+
+        bf::directory_iterator end;
+
+        for (bf::directory_iterator i(bf::path("screens")); i != end; ++i)
+        {
+            //try
+            //{
+                if (bf::is_regular(i->status()))
+                {
+                    manager.load_screen(i->leaf(), /* load file into script */ "");
+                }
+            //}
+        }
+
+        manager.show_screen("main");
     }
 
-    game_window::instance ().close ();
+    game_window::instance().close();
 }
 
 int main (int argc, char** argv)
 {
+    boost::thread thread(&game_thread);
+
     try
     {
-        PyEval_InitThreads ();
-        Py_Initialize ();
-        PySys_SetArgv (argc, argv);
-
-        bp::object global = bp::import ("__main__").attr ("__dict__");
-        bp::object builtin = bp::import ("__builtin__").attr ("__dict__");
-
-        /// Create the pseudo built-in module _star
-        bp::object star (bp::handle<> (PyModule_New ("_star")));
-        builtin["_star"] = star;
-        {
-            bp::scope s (star);
-            python::module_star ();
-        }
-
-        bf::path main_py ("python/main.py");
-
-        boost::thread py_thread (
-                boost::bind (&python_thread,
-                             bp::str (main_py.native_file_string ()),
-                             global)
-                );
-
-        game_window::instance ().draw ();
-
-        /// \todo Handle closing of the graphics window
-        py_thread.join ();
+        game_window::instance().draw();
+        thread.join();
     }
-    catch (boost::python::error_already_set const&)
+    catch (window_closed_exception const&)
     {
-        PyErr_Print ();
+        // Kill game thread
     }
-
-//  boost-devel ml said this won't work. I'll believe them for now.
-//    Py_Finalize ();
 }
+

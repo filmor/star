@@ -17,11 +17,17 @@ namespace star
 
     struct graphics_exception : std::runtime_error
     {
-        graphics_exception (std::string const& s) : std::runtime_error (s)
+        graphics_exception(std::string const& s) : std::runtime_error (s)
         {}
     };
 
-    namespace detail { void glfw_key_callback (int, int); }
+    struct window_closed_exception : public graphics_exception
+    {
+        window_closed_exception(std::string const& s) : graphics_exception(s)
+        {}
+    };
+
+    namespace detail { void glfw_key_callback(int, int); }
     
     /**
      * Game window singleton.
@@ -37,7 +43,7 @@ namespace star
         /// Private typedefs.
         /// \{
         typedef boost::mutex                mutex_type;
-        typedef boost::try_mutex            draw_mutex_type;
+        typedef boost::mutex                draw_mutex_type;
         typedef mutex_type::scoped_lock     read_lock;
         typedef mutex_type::scoped_lock     write_lock;
         /// \)
@@ -60,11 +66,10 @@ namespace star
         typedef std::pair<std::size_t, std::size_t>
             dimensions_type;
 
-        /// Singleton instance method
-        static game_window& instance ()
+        static game_window& instance()
         {
-            static game_window _instance;
-            return _instance;
+            static game_window instance_;
+            return instance_;
         }
 
         /// Start the drawing loop
@@ -75,48 +80,61 @@ namespace star
 
         /// \todo Rename, init is not appropriate
         void enqueue_init (initializer_type const& f)
-        { write_lock l (_inits_mutex); _inits.push (f); }
+        { write_lock l (inits_mutex_); inits_.push (f); }
         
         /// Set the current drawing function to f
         void set_drawer (drawer_type const& f)
-        { write_lock l (_drawer_mutex); _drawer = f; }
+        {
+            write_lock l(drawer_mutex_);
+            drawer_ = f;
+        }
+
+        drawer_type get_drawer()
+        {
+            read_lock l(drawer_mutex_);
+            return drawer_;
+        }
 
         /// Clear the current drawer (does not stop the drawing loop!)
-        void clear_drawer () { write_lock l (_drawer_mutex); _drawer.clear (); }
+        void clear_drawer()
+        {
+            write_lock l(drawer_mutex_);
+            drawer_.clear ();
+        }
 
         /// \returns if currently the drawing loop is running
-        bool is_drawing () const { return _drawing; }
+        bool is_drawing() const { return drawing_; }
 
-        void set_key_callback (key_callback_type cb, key_callback_mode mode);
-        void clear_key_callback ();
+        void set_key_callback(key_callback_type cb, key_callback_mode mode);
+        void clear_key_callback();
 
-        dimensions_type get_dimensions () const { return _dimensions; }
+        dimensions_type get_dimensions() const { return dimensions_; }
 
     private:
-        game_window ();
-        ~game_window ();
+        game_window();
+        ~game_window();
 
         /// Open a window and prepare the OpenGL context.
-        void open (std::size_t x, std::size_t y, bool windowed);        
+        void open(std::size_t x, std::size_t y, bool windowed);        
 
         /// Draw a frame.
-        void do_draw ();
+        void do_draw();
 
         /// The current drawing functor, called every frame.
-        drawer_type _drawer;
+        drawer_type drawer_;
 
-        key_callback_type _key_callback;
+        key_callback_type key_callback_;
 
         /// Queue of functions to run once
-        std::queue<initializer_type> _inits;
+        std::queue<initializer_type> inits_;
         
-        mutex_type _drawer_mutex;
-        mutex_type _inits_mutex;
+        mutex_type drawer_mutex_;
+        mutex_type inits_mutex_;
 
-        volatile bool _drawing;
+        volatile bool drawing_;
         
         /// Window x and y sizes
-        dimensions_type _dimensions;
+        dimensions_type dimensions_;
     };
 
 }

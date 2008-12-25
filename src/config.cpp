@@ -7,18 +7,14 @@ namespace star
 {
 
     config::config ()
-    {
-        boost::filesystem::path p ("config");
-
-        load_source (p.string ());
-    }
+    {}
 
     config::~config ()
     {}
 
-    void config::load_source (std::string const& str)
+    void config::enqueue_source (source_ptr ptr)
     {
-        /// Lua
+        sources_.push_back (ptr);
     }
 
 }

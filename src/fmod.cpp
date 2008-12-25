@@ -19,17 +19,14 @@ namespace detail
     {
         if (_system == 0)
         {
-            
+            fmod_config config;
+
             STAR_FMOD_EC(FMOD::System_Create (&_system));
 
-/*            STAR_FMOD_EC(_system->setOutput (
-                          config::instance ().get<fmod_facility::output> ()
-                        ));
-                        */
+            STAR_FMOD_EC(_system->setOutput (config.output_device));
 
             STAR_FMOD_EC(_system->setSoftwareFormat (44100, FMOD_SOUND_FORMAT_PCM16
-                                                , 2, 0, FMOD_DSP_RESAMPLER_LINEAR)
-                    );
+                         , 2, 0, FMOD_DSP_RESAMPLER_LINEAR));
 
             STAR_FMOD_EC(_system->init(32, FMOD_INIT_NORMAL, 0));
         }

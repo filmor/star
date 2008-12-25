@@ -3,6 +3,7 @@
 
 #include "game_window.hpp"
 #include "screen_manager.hpp"
+#include "config.hpp"
 
 #include <boost/filesystem/path.hpp>
 #include <boost/filesystem/operations.hpp>
@@ -15,6 +16,15 @@ void game_thread()
 {
     {
         screen_manager manager(game_window::instance());
+
+        config& cfg = config::instance ();
+
+/*      cfg.add_source (new command_line_source (argc, argv));
+        try
+        {
+            cfg.add_source (new python_source (cfg.get<bf::path> ("config_file")));
+        }
+        catch (file_not_found&) {} */
 
         bf::directory_iterator end;
 

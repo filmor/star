@@ -1,7 +1,6 @@
 #ifndef STAR_TEXTURE_DRAWER_HPP
 #define STAR_TEXTURE_DRAWER_HPP
 
-#include "scene.hpp"
 #include "resource.hpp"
 
 #include <vector>

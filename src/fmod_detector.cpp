@@ -27,7 +27,7 @@ namespace star
         EC(system.createSound (0, FMOD_2D | FMOD_SOFTWARE | FMOD_LOOP_NORMAL
                                      | FMOD_OPENUSER, &exinfo, &_sound));
 
-        EC(system.recordStart (_sound, true));
+        EC(system.recordStart (0, _sound, true));
 
         EC(system.playSound (FMOD_CHANNEL_REUSE, _sound, false, &_channel));
 

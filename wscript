@@ -29,10 +29,13 @@ def configure(conf):
     conf.check_tool('boost')
 
     # GLFW
+    conf.check_cxx(lib='glfw', uselib_store='GLFW')
     if sys.platform == 'darwin':
         conf.env['LINKFLAGS_GLFW'] = '-framework Carbon -framework AGL ' \
                                    + '-framework OpenGL'
-        conf.env['LIB_GLFW'] = 'glfw'
+    elif sys.platform == 'linux2':
+        conf.check_cxx(lib='GL', uselib_store='GLFW')
+        conf.check_cxx(lib='GLU', uselib_store='GLFW')
 
     # GD
     conf.check_cxx(lib='gd', uselib_store='GD')

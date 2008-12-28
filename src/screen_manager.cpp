@@ -5,9 +5,9 @@ namespace bf = boost::filesystem;
 namespace star
 {
 
-    void screen_manager::load_screen(std::string const& name, script const& scr)
+    void screen_manager::load_screen(std::string const& name, std::istream& scr)
     {
-        screens_[name] = scr;
+        screens_[name] = intp_.load_program(scr, name);
     }
 
     void screen_manager::show_screen(std::string const& name)

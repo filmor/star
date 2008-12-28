@@ -1,1 +1,1 @@
-screen:start("menu")
+screen.start("menu")

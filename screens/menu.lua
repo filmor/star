@@ -3,14 +3,14 @@ function show_menu(name, entries)
 
     local function draw(selected)
         -- Render title
-        render_text(0, 0, name, style:headline)
+        render_text(0, 0, name, style.headline)
 
         -- Render entries (maybe more abstract later)
         for i, entry in ipairs(entries) do
             if i == selected then
-                render_text(0, 0.1 * i, entry[1], style:selected)
+                render_text(0, 0.1 * i, entry[1], style.selected)
             else
-                render_text(0, 0.1 * i, entry[1], style:normal)
+                render_text(0, 0.1 * i, entry[1], style.normal)
             end
         end
     end
@@ -21,16 +21,16 @@ function show_menu(name, entries)
         draw(selected)
         local key = key:pressed()
 
-        if key == keys:enter then
+        if key == keys.enter then
             return entries[selected][2]()
-        elseif key == keys:up then
+        elseif key == keys.up then
             -- Lua starts indexing with 1
             selected = selected % #entries + 1
-        elseif key == keys:down then
+        elseif key == keys.down then
             if selected == 1 then
                 selected = #entries
             else
-                selected -= 1
+                selected = selected - 1
             end
         end
     end

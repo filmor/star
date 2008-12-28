@@ -19,14 +19,14 @@ namespace star
 
         ~screen_manager() {}
 
-        void load_screen(std::string const& name, script const& scr);
+        void load_screen(std::string const& name, std::istream& scr);
 
         void show_screen(std::string const& name);
 
     private:
         game_window& window_;
         interpreter intp_;
-        std::map<std::string, script> screens_;
+        std::map<std::string, program> screens_;
     };
 
 }

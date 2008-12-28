@@ -6,6 +6,7 @@
 #include "config.hpp"
 
 #include <boost/filesystem/path.hpp>
+#include <boost/filesystem/fstream.hpp>
 #include <boost/filesystem/operations.hpp>
 
 namespace bf = boost::filesystem;
@@ -34,7 +35,8 @@ void game_thread()
             //{
                 if (bf::is_regular(i->status()))
                 {
-                    manager.load_screen(i->leaf(), /* load file into script */ "");
+                    bf::ifstream file(*i);
+                    manager.load_screen(i->leaf(), file);
                 }
             //}
         }

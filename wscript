@@ -29,6 +29,7 @@ def configure(conf):
     conf.check_tool('boost')
 
     # GLFW
+    # Darwin has proper support now
     conf.check_cxx(lib='glfw', uselib_store='GLFW')
     if sys.platform == 'darwin':
         conf.env['LINKFLAGS_GLFW'] = '-framework Carbon -framework AGL ' \

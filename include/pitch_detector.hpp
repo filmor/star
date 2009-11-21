@@ -24,7 +24,7 @@ namespace star
 
             note_t result;
             float k = std::log (f) / log2 - log2_440;
-            result.value = std::fmod (k, 12) + 9.0f;
+            result.value = std::fmod (k, 12) + 9.0f; //  Addition nicht davor?!
             result.octave = static_cast<unsigned> (k + a/12.0f + eps);
             return result;
         }

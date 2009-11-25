@@ -5,7 +5,6 @@
 #include <iosfwd>
 
 #include <lua.hpp>
-#include <luabind/luabind.hpp>
 
 #include <boost/utility.hpp>
 

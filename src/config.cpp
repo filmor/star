@@ -1,7 +1,6 @@
 #include "config.hpp"
 
 #include <boost/filesystem/path.hpp>
-#include <luabind/luabind.hpp>
 
 namespace star
 {

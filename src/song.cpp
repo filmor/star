@@ -11,8 +11,6 @@
 #include <boost/ref.hpp>
 #include <boost/bind.hpp>
 
-#include <luabind/operator.hpp>
-
 #include "ultrastar.hpp"
 
 #include "utility/midi/parser.hpp"
@@ -115,8 +113,7 @@ namespace star
 
     audio_stream song::get_audio_stream (unsigned char s) const
     {
-        return audio_stream(luabind::tostring_operator(desc_["audio_type"]),
-                            path_ / "audio");
+        return audio_stream(desc_.at("audio_type"), path_ / "audio");
     }
 
     song::notes song::get_notes (unsigned char s) const

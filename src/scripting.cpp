@@ -25,7 +25,7 @@ namespace star
     interpreter::interpreter()
     {
         state_ = lua_newstate(&alloc, 0);
-        // lua_atpanic
+        // Register lua_atpanic
     }
 
     interpreter::~interpreter()

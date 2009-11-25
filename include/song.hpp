@@ -6,13 +6,13 @@
 
 #include "utility/filter_tuple.hpp"
 
-#include <luabind/luabind.hpp>
 #include <boost/filesystem/path.hpp>
 #include <boost/tuple/tuple.hpp>
 #include <boost/range/iterator_range.hpp>
 #include <boost/iterator/transform_iterator.hpp>
 #include <string>
 #include <vector>
+#include <map>
 
 namespace star
 {
@@ -24,7 +24,8 @@ namespace star
         typedef boost::tuple<time_duration, note_t, std::string> syllable_type;
         typedef std::vector<syllable_type> data_type;
         
-        typedef luabind::object desc_type;
+        /// TODO!
+        typedef std::map<std::string, std::string> desc_type;
 
         typedef data_type::const_iterator syllable_iterator;
 

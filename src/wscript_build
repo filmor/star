@@ -1,0 +1,8 @@
+from glob import glob
+from os.path import basename
+
+obj = bld.new_task_gen('cxx', 'program')
+obj.source = [basename(i) for i in glob("src/*.cpp")]
+obj.target = "star"
+obj.includes = "../include"
+obj.uselib = "GLFW BOOST_SYSTEM BOOST_THREAD BOOST_FILESYSTEM LUA FMOD GD"

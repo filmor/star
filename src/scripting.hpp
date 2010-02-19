@@ -7,6 +7,7 @@
 #include <lua.hpp>
 
 #include <boost/utility.hpp>
+#include <boost/operators.hpp>
 
 namespace star
 {

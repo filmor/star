@@ -11,11 +11,16 @@
 namespace star
 {
 
+    /**
+     * Screen Manager Class
+     *
+     * Manages the available screens, switching of screens, sets keyboard
+     * callbacks and nothing more.
+     */
     class screen_manager : boost::noncopyable
     {
     public:
-        screen_manager(game_window& window) : window_(window)
-        {}
+        screen_manager(game_window& window);
 
         ~screen_manager() {}
 

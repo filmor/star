@@ -1,19 +1,9 @@
-from os.path import join, basename
-from glob import glob
 import sys
 
 VERSION='0.0'
 APPNAME='star'
 
-srcdir = 'src'
-
 program_file = 'main.cpp'
-
-sources = [basename(i) for i in glob(join(srcdir, '*.cpp'))]
-
-blddir = 'build'
-
-include_dir = 'include'
 
 def set_options(opt):
     opt.tool_options('compiler_cxx')
@@ -35,9 +25,6 @@ def configure(conf):
     elif sys.platform == 'linux2':
         conf.check_cxx(lib='GL', uselib_store='GLFW')
         conf.check_cxx(lib='GLU', uselib_store='GLFW')
-
-    # GD
-    conf.check_cxx(lib='gd', uselib_store='GD')
 
     # Lua
     conf.check_cfg(package='lua', args='--cflags --libs', uselib_store='LUA')
